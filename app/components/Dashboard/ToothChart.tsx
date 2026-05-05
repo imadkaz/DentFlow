@@ -70,8 +70,8 @@ export function ToothChart() {
     return (
       <button
         onClick={() => handleToothClick(tooth)}
-        className={`relative w-10 h-14 ${colors.bg} ${colors.border} border-2 rounded-lg ${colors.hover} transition-all cursor-pointer flex items-center justify-center ${
-          isSelected ? 'ring-2 ring-blue-500 ring-offset-2 scale-110' : ''
+        className={`relative w-8 h-11 ${colors.bg} ${colors.border} border-2 rounded-lg ${colors.hover} transition-all cursor-pointer flex items-center justify-center ${
+          isSelected ? 'ring-2 ring-blue-500 ring-offset-2 scale-105' : ''
         }`}
         title={`Tooth #${tooth.label}`}
       >
@@ -83,7 +83,7 @@ export function ToothChart() {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 overflow-hidden">
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">Tooth Chart</h3>
         <p className="text-sm text-gray-600">Click on any tooth to view details</p>
@@ -94,7 +94,7 @@ export function ToothChart() {
         {/* Upper Teeth */}
         <div className="space-y-2">
           <p className="text-xs text-gray-500 text-center mb-3">Upper Teeth</p>
-          <div className="flex justify-center gap-1">
+          <div className="flex justify-center gap-1  pb-2">
             {/* Upper Right */}
             <div className="flex gap-1">
               {teeth.slice(0, 8).reverse().map((tooth) => (
