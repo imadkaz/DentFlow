@@ -6,6 +6,8 @@ import { AnalyticsCards } from "../data/AnaliticsCard";
 import { todayAppointments, getPatientById } from "../data/patientsData";
 import { PatientDetailModal } from "../components/Dashboard/PatientDetailModal";
 import { BookingInterface } from "../components/Dashboard/BookingInterface";
+import { ToothChart } from "../components/Dashboard/ToothChart";
+import { TreatmentPlanPanel } from "../components/Dashboard/TreatmentPlanPanel";
 
 export default function Home() {
   const [showBooking, setShowBooking] = useState(false);
@@ -23,7 +25,7 @@ export default function Home() {
     // You can add logic to scroll to or highlight the specific patient's plan
   };
 
-    // Show booking interface
+  // Show booking interface
   if (showBooking) {
     return <BookingInterface onClose={() => setShowBooking(false)} />;
   }
@@ -58,7 +60,18 @@ export default function Home() {
               <Analytics key={index} {...card} />
             ))}
           </div>
+          {/* Main Dashboard Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Tooth Chart - Takes 2 columns */}
+            <div className="lg:col-span-2">
+              <ToothChart />
+            </div>
 
+            {/* Treatment Plan Panel - Takes 1 column */}
+            <div className="lg:col-span-1">
+              <TreatmentPlanPanel />
+            </div>
+          </div>
           {/* Recent Activity Section */}
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Appointments */}
