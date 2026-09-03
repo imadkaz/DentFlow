@@ -20,7 +20,10 @@ build/
 # Editor
 .vscode/
 .idea/
-db.ts
 # OS
 .DS_Store
 Thumbs.db
+src/config/
+logs
+data
+coverage
