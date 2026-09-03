@@ -1,0 +1,26 @@
+node_modules
+# Keep environment variables out of version control
+*.db
+
+
+# Environment variables — لازم تضل سرية دايمًا
+.env
+.env.local
+
+# Prisma generated client — بيتولّد تلقائيًا من npx prisma generate، ما لازم يترفع
+src/generated/
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+db.ts
+# OS
+.DS_Store
+Thumbs.db
