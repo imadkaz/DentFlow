@@ -1,6 +1,6 @@
-import { Clinic } from "../models/Clinic.model";
-import { IClinicRepository } from "../repository/IClinicRepository";
-import { NotFoundError } from "../util/exceptions/http/NotFoundError";
+import { Clinic } from "../../models/Clinic.model";
+import { IClinicRepository } from "../../repository/interfaces/IClinicRepository";
+import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
 
 export interface UpdateClinicInput {
     id: string;
