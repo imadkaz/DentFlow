@@ -1,12 +1,12 @@
 // src/repository/ClinicRepository.ts
 
 import { PrismaClient } from '../generated/prisma/client';
-import { IClinicRepository } from './IClinicRepository';
+import { IClinicRepository } from './interfaces/IClinicRepository';
 import { Clinic } from '../models/Clinic.model';
 import { ClinicMapper } from '../mapper/Clinic.mapper';
 
 export class ClinicRepository implements IClinicRepository {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: PrismaClient) { }
 
     async findById(id: string): Promise<Clinic | null> {
         const raw = await this.prisma.clinic.findUnique({ where: { id } });

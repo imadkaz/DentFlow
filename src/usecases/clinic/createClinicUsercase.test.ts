@@ -2,8 +2,8 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { CreateClinicUsecase } from './CreateClinicUsecase';
-import { IClinicRepository } from '../repository/IClinicRepository';
-import { Clinic } from '../models/Clinic.model';
+import { IClinicRepository } from '../../repository/interfaces/IClinicRepository';
+import { Clinic } from '../../models/Clinic.model';
 
 // تنفيذ وهمي (fake) للـ IClinicRepository — كله بالذاكرة، بدون Neon， بدون انترنت
 class FakeClinicRepository implements IClinicRepository {
