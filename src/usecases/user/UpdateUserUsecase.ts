@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 
 export interface UpdateUserInput {
     id: string;
-    name?: string;
+    firstName?: string;
     lastName?: string;
     email?: string;
     password?: string;
@@ -25,7 +25,7 @@ export class UpdateUserUsecase {
             
         const updatedUser = User.create({
             id: existingUser.getId(),
-            firstName: input.name !== undefined ? input.name : existingUser.getFirstName(),
+            firstName: input.firstName !== undefined ? input.firstName : existingUser.getFirstName(),
             lastName: input.lastName !== undefined ? input.lastName : existingUser.getLastName(),
             email: input.email !== undefined ? input.email : existingUser.getEmail(),
             passwordHash: newPasswordHash,

@@ -20,6 +20,15 @@ import { UpdateUserUsecase } from '../usecases/user/UpdateUserUsecase';
 import { DeleteUserUsecase } from '../usecases/user/DeleteUserUsecase';
 import { GetUserUsecase } from '../usecases/user/GetUserUsecase';
 
+// Doctor
+import { DoctorRoutes } from './Doctor.Routes';
+import { DoctorController } from '../Controllers/DoctorController';
+import { DoctorRepository } from '../repository/DoctorRepository';
+import { CreateDoctorUsecase } from '../usecases/doctor/CreateDoctorUsecase';
+import { getDoctorUsecase } from '../usecases/doctor/GetDoctorUsecase';
+import { UpdateDoctorUsecase } from '../usecases/doctor/UpdateDoctorUsecase';
+import { DeleteDoctorUsecase } from '../usecases/doctor/DeleteDoctorUsecase';
+
 const routes = Router();
 
 // ---- Clinic wiring ----
@@ -40,7 +49,17 @@ const userController = new UserController(
     new CreateUserUsecase(userRepository),
 );
 
+// ---- Doctor wiring ----
+const doctorRepository = new DoctorRepository(prisma);
+const doctorController = new DoctorController(
+    new CreateDoctorUsecase(doctorRepository, clinicRepository, userRepository),
+    new UpdateDoctorUsecase(doctorRepository),
+    new getDoctorUsecase(doctorRepository),
+    new DeleteDoctorUsecase(doctorRepository)
+)
+
 routes.use('/clinics', ClinicRoutes(clinicController));
 routes.use('/users', UserRoutes(userController));
+routes.use('/doctors', DoctorRoutes(doctorController));
 
 export default routes;

@@ -27,7 +27,7 @@ describe('ClinicRepository (integration)', () => {
             name: 'Integration Test Clinic',
             email: `test-${Date.now()}@example.com`,
         });
-
+        
         const saved = await clinicRepository.save(clinic);
         createdIds.push(saved.getId());
 

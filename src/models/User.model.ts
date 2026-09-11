@@ -37,8 +37,8 @@ export class User {
             trimmedLastName,
             props.email,
             props.passwordHash,
-            now,
-            now
+            props.createdAt ?? now,
+            props.updatedAt ?? now
         );
 
     }

@@ -4,6 +4,7 @@ import { GetClinicUsecase } from "../usecases/clinic/GetClinicUsecase";
 import { UpdateClinicUsecase } from "../usecases/clinic/UpdateClinicUsecase";
 import { Request, Response } from "express";
 import { Clinic } from "../models/Clinic.model";
+import { NotFoundError } from "../util/exceptions/http/NotFoundError";
 
 export class ClinicControllers {
 
@@ -22,22 +23,35 @@ export class ClinicControllers {
             email: input.email,
             logoUrl: input.logoUrl,
         });
-        res.status(201).json(this.toResponse(clinic));
+        res.json(this.toResponse(clinic));
     }
     getClinicById = async (req: Request, res: Response) => {
         const id = req.params.id;
+
+        if(!id){
+            throw new NotFoundError("Doctor not found!")
+        }
         const clinic = await this.getClinicUsecase.executeByID(id as string);
         res.status(200).json(this.toResponse(clinic));
 
     }
     getClinicByEmail = async (req: Request, res: Response) => {
         const email = req.params.email;
+
+        if(!email){
+            throw new NotFoundError("Doctor not found!")
+        }
         const clinic = await this.getClinicUsecase.executeByEmail(email as string);
         res.status(200).json(this.toResponse(clinic));
 
     }
     deleteClinic = async (req: Request, res: Response) => {
         const id = req.params.id;
+
+        if(!id){
+            res.status(400).json({error: 'Clinic Id is required'})
+            throw new NotFoundError("Doctor not found!")
+        }
         await this.deleteClinicUsecase.execute(id as string);
         res.status(204).send();
 

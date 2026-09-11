@@ -52,7 +52,7 @@ export class UserController {
         const input = req.body;
         const user = await this.updateUserUsecase.execute({ 
             id: id as string,
-            name: input.name,
+            firstName: input.name,
             lastName: input.lastName,
             email: input.email,
             password: input.password,
