@@ -23,7 +23,7 @@ export class ClinicControllers {
             email: input.email,
             logoUrl: input.logoUrl,
         });
-        res.json(this.toResponse(clinic));
+        res.status(201).json(this.toResponse(clinic));
     }
     getClinicById = async (req: Request, res: Response) => {
         const id = req.params.id;
