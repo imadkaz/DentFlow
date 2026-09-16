@@ -60,6 +60,6 @@ export class CreateDoctorUsecase{
         createdAt: input.createdAt
     });
 
-    return this.doctorRepository.save(doctor);
+    return await this.doctorRepository.save(doctor);
 }
 }

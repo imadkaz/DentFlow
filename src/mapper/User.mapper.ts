@@ -1,7 +1,7 @@
 import { User as prismaUser, Prisma} from '../generated/prisma/client';
 import { User } from '../models/User.model';
 
-export class UserMapper {
+export class UserMapper  {
     static toDomain(raw: prismaUser): User {
         return User.create({
             id: raw.id,
