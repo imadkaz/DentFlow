@@ -33,7 +33,7 @@ jobs:
       - name: Run tests
         run: npm run test-vitest
       
-    lint:
+  lint:
     runs-on: ubuntu-latest
     needs: test
     steps:
