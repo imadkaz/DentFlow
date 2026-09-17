@@ -32,6 +32,7 @@ jobs:
 
       - name: Run tests
         run: npm run test-vitest
+
       
   lint:
     runs-on: ubuntu-latest
