@@ -53,7 +53,6 @@ export class DoctorController{
     getDoctorById = async (req: Request, res: Response) => {
         const id  = req.params.id;
         if(!id){
-            res.status(400).json({error: 'Doctor Id is required'})
             throw new NotFoundError("Doctor not found!")
         }
 
@@ -64,7 +63,6 @@ export class DoctorController{
     getDoctorByEmail = async (req: Request, res: Response) => {
         const email  = req.params.email;
         if(!email){
-            res.status(400).json({error: 'Doctor email is required'})
             throw new NotFoundError("Doctor not found!")
         }
 
@@ -76,7 +74,6 @@ export class DoctorController{
     getDoctorByLicenseNo = async (req: Request, res: Response) => {
         const LicenseNo  = req.params.licenseNo;
         if(!LicenseNo){
-            res.status(400).json({error: 'Doctor Id is required'})
             throw new NotFoundError("Doctor not found!")
         }
 

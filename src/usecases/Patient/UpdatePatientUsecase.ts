@@ -3,15 +3,14 @@ import { IPatientRepository } from "../../repository/interfaces/IPatientReposito
 import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
 
 export interface UpdatePatientProps {
-    id: string,
-    clinicId: string,
-    name: string,
-    initials: string,
-    status?: PatientStatus,
-    email?: string,
-    phone?: string,
-    address?: string,
-    dateOfBirth?: Date | null,
+    id: string;
+    name?: string;
+    initials?: string;
+    status?: PatientStatus;
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    dateOfBirth?: Date | null;
 }
 
 export class UpdatePatientUsecase {
