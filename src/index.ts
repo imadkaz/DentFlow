@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import logger from './util/logger';
@@ -48,7 +48,7 @@ app.use((req, res) => {
 });
 
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response) => {
     if (err instanceof NotFoundError) {
         return res.status(404).json({ message: err.message });
     }

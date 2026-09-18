@@ -3,7 +3,6 @@ import { Clinic } from '../../models/Clinic.model';
 import { randomUUID } from 'node:crypto';
 import logger from '../../util/logger';
 import { ConflictError } from '../../util/exceptions/http/ConflictError';
-import { NotFoundError } from '../../util/exceptions/http/NotFoundError';
 
 
 export interface CreateClinicInput {

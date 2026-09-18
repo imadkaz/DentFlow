@@ -6,8 +6,7 @@ const requestLogger = (req: Request, res: Response, next: NextFunction) => {
     res.on('finish', () => {
         const duration = Date.now() - startTime;
         const status = res.statusCode;
-        const { method, originalUrl } = req;
-        let level = status >= 500 ? 'error' : status >= 400 ? 'warn' : 'info';
+        const level = status >= 500 ? 'error' : status >= 400 ? 'warn' : 'info';
         logger.log({level, message: `${req.method} ${req.originalUrl} ${status} ${duration}ms`});
              
     });

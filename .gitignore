@@ -11,8 +11,7 @@ node_modules
 src/generated/
 
 # Build output
-dist/
-build/
+
 
 # Logs
 *.log
@@ -23,7 +22,5 @@ build/
 # OS
 .DS_Store
 Thumbs.db
-src/config/
 logs
 data
-coverage

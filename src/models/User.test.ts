@@ -37,10 +37,10 @@ describe('UserRepository (integration)', () => {
             const foundUser = await userRepository.findById(savedUser.getId());
             expect(foundUser?.getFirstName()).toBe('Findable');
             expect(foundUser?.getLastName()).toBe('User');
-        } catch (e: any) {
-            console.log('CODE:', e.code);
-            console.log('MESSAGE:', e.message);
-            console.log('META:', JSON.stringify(e.meta));
+        } catch (e) {
+            console.log('CODE:', e);
+            console.log('MESSAGE:', e);
+            console.log('META:', JSON.stringify(e));
             throw e;
         }
     });
@@ -60,10 +60,10 @@ describe('UserRepository (integration)', () => {
 
             const foundUser = await userRepository.findByEmail(email);
             expect(foundUser?.getEmail()).toBe(savedUser.getEmail());
-        } catch (e: any) {
-            console.log('CODE:', e.code);
-            console.log('MESSAGE:', e.message);
-            console.log('META:', JSON.stringify(e.meta));
+        } catch (e) {
+            console.log('CODE:', e);
+            console.log('MESSAGE:', e);
+            console.log('META:', JSON.stringify(e));
             throw new NotFoundError('User not found');
         }
     })
