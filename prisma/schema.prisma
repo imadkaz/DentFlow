@@ -46,6 +46,7 @@ model Doctor {
   phone        String?         @db.VarChar(30)
   email        String?         @unique @db.VarChar(120)
   createdAt    DateTime        @default(now())
+  appointment  Appointment[]
 
   @@map("doctors")
 }
@@ -72,4 +73,30 @@ model Patient {
   totalVisit Int            @default(0)
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
+  appointments Appointment[]
 }
+
+enum AppointmentStatus {
+  confirmed
+  pending
+  completed
+  cancelled
+  in_progress
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  patientId   String
+  patient     Patient           @relation(fields: [patientId], references: [id])
+  doctorId    String
+  doctor      Doctor            @relation(fields: [doctorId], references: [id])
+  procedure   String            @db.VarChar(120)
+  apptDate    DateTime          @db.Date
+  apptTime    DateTime          @db.Time
+  durationMin Int               @default(30) @db.SmallInt
+  status      AppointmentStatus @default(pending)
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
