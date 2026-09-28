@@ -10,6 +10,7 @@
         route.delete('/:id', asyncHandler(patientController.deletePatient))
         route.get('/:id', asyncHandler(patientController.getPatientById))
         route.get('/name/:name', asyncHandler(patientController.getPatientByName))
+        route.get('/clinic/:clinicId', patientController.getClinicPatient)
 
         return route
     }

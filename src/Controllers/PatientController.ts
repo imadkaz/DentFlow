@@ -5,13 +5,16 @@ import { GetPatientUsecase } from "../usecases/Patient/GetPatientUsecase";
 import { UpdatePatientUsecase } from "../usecases/Patient/UpdatePatientUsecase";
 import { Request, Response } from "express";
 import { NotFoundError } from "../util/exceptions/http/NotFoundError";
+import { GetClinicPatientUsecase } from "../usecases/Patient/GetClinicpatientUsecase";
+import { cli } from "winston/lib/winston/config";
 export class PatientController {
 
     constructor(
         private readonly createPatientUsecase: CreatePatientUsecase,
         private readonly updatePatientUsecase: UpdatePatientUsecase,
         private readonly getPatientUsecase: GetPatientUsecase,
-        private readonly deletePatientUsecase: DeletePatientUsecase
+        private readonly deletePatientUsecase: DeletePatientUsecase,
+        private readonly getClinicPatientUsecase: GetClinicPatientUsecase
     ){}
 
     createPatient = async (req: Request, res: Response) => {
@@ -74,6 +77,17 @@ export class PatientController {
         const getPatient = await this.getPatientUsecase.executeByName(name as string)
 
         res.status(200).json(getPatient.map(patient => this.toResponse(patient)))
+    }
+
+    getClinicPatient = async (req: Request, res: Response) => {
+        const clinicId = req.params.clinicId as string;
+        if(!clinicId){
+            throw new NotFoundError("Clinic Not Found");
+        }
+
+        const patients = await this.getClinicPatientUsecase.execute(clinicId)
+
+        res.status(200).json(patients.map(p => this.toResponse(p)))
     }
 
     deletePatient = async (req: Request, res: Response) => {

@@ -3,4 +3,5 @@ import { IRepository } from "./IRepository";
 
 export interface IPatientRepository extends IRepository<Patient>{
     findByName(name: string): Promise<Patient[]>;
+    findByClinicId(clinicId: string): Promise<Patient[]>;
 }   

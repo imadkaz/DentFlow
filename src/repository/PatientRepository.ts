@@ -6,6 +6,14 @@ import { IPatientRepository } from "./interfaces/IPatientRepository";
 export class PatientRepository implements IPatientRepository {
 
     constructor(private readonly prisma: PrismaClient) { }
+    async findByClinicId(clinicId: string): Promise<Patient[]> {
+        const rows = await this.prisma.patient.findMany({
+            where: {clinicId},
+            orderBy: [{name: 'desc'}, {email: "desc"}, {phone: "desc"}, {address: "desc"}, {totalVisit: "desc"}]
+        })
+
+        return rows.map(PatientMapper.toDomain)
+    }
 
     async findByName(name: string): Promise<Patient[]> {
     const rows = await this.prisma.patient.findMany({

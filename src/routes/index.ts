@@ -42,6 +42,7 @@ import { GetAppointmentUsecase } from '../usecases/Appointment/getAppointmentUse
 import { DeleteAppointmentUsecase } from '../usecases/Appointment/DeleteAppointmentUsecase';
 import { UpdateAppointmentUsecase } from '../usecases/Appointment/UpdateAppointmentUsecase';
 import { AppointmentRoutes } from './Appointment.Routes';
+import { GetClinicPatientUsecase } from '../usecases/Patient/GetClinicpatientUsecase';
 
 const routes = Router();
 
@@ -78,7 +79,8 @@ const patientController = new PatientController(
     new CreatePatientUsecase(patientRepository, clinicRepository),
     new UpdatePatientUsecase(patientRepository),
     new GetPatientUsecase(patientRepository),
-    new DeletePatientUsecase(patientRepository)
+    new DeletePatientUsecase(patientRepository),
+    new GetClinicPatientUsecase(patientRepository, clinicRepository)
 )
 
 // ---- Appointment wiring ----
