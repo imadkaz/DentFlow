@@ -5,4 +5,5 @@ export interface IDoctorRepository extends IRepository<Doctor> {
     findByLicenseNo(licenseNo: string): Promise<Doctor | null>;
     findByEmail(email: string): Promise<Doctor | null>;
     findByUserId(userId: string): Promise<Doctor | null>;
+    findByClinicId(clinicId: string): Promise<Doctor[]>;
 }

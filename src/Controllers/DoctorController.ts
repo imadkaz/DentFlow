@@ -5,6 +5,7 @@ import { getDoctorUsecase } from "../usecases/doctor/GetDoctorUsecase";
 import { UpdateDoctorUsecase } from "../usecases/doctor/UpdateDoctorUsecase";
 import { Doctor } from "../models/Doctor.model";
 import { NotFoundError } from "../util/exceptions/http/NotFoundError";
+import { GetClinicDoctorUsecase } from "../usecases/doctor/GetClinicDoctorUsecase";
 
 export class DoctorController{
 
@@ -12,7 +13,8 @@ export class DoctorController{
         private readonly createDoctorUsecase: CreateDoctorUsecase,
         private readonly updateDoctorUsecase: UpdateDoctorUsecase,
         private readonly getDoctorUsecase   : getDoctorUsecase,
-        private readonly deleteDoctorUsecase: DeleteDoctorUsecase
+        private readonly deleteDoctorUsecase: DeleteDoctorUsecase,
+        private readonly getClinicDoctorusecase: GetClinicDoctorUsecase
     ){}
 
     createDoctor = async (req: Request, res: Response) => {
@@ -82,7 +84,15 @@ export class DoctorController{
         res.status(200).json(this.toResponse(getDoctor));
     }
 
-    deleteDoctor = async(req: Request, res: Response) => {
+    getClinicDoctor = async (req: Request, res: Response) => {
+        const clinicId = req.params.clinicId as string;
+
+        const doctors = await this.getClinicDoctorusecase.execute(clinicId)
+
+        res.status(200).json(doctors.map(a => this.toResponse(a)))
+    }
+
+    deleteDoctor = async (req: Request, res: Response) => {
 
         const id = req.params.id;
         await this.deleteDoctorUsecase.execute(id as string)
