@@ -25,6 +25,9 @@ class FakeAppointmentRepository implements IAppointmentRepository {
 
 class FakePatientRepository implements IPatientRepository {
     constructor(private patient: Patient | null) { }
+    findByClinicId(clinicId: string): Promise<Patient[]> {
+        return Promise.resolve(this.patient?.getClinicId() === clinicId ? [this.patient] : []);
+    }
     async findById(id: string) { return this.patient?.getId() === id ? this.patient : null; }
     async findByName() { return []; }
     async save(p: Patient) { return p; }
@@ -34,6 +37,9 @@ class FakePatientRepository implements IPatientRepository {
 
 class FakeDoctorRepository implements IDoctorRepository {
     constructor(private doctor: Doctor | null) { }
+    async findByClinicId(clinicId: string): Promise<Doctor[]> {
+        return this.doctor?.getClinicId() === clinicId ? [this.doctor] : [];
+    }
     async findById(id: string) { return this.doctor?.getId() === id ? this.doctor : null; }
     async findByEmail() { return null; }
     async findByLicenseNo() { return null; }
