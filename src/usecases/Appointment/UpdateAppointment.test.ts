@@ -5,6 +5,12 @@ import { Appointment } from '../../models/Appointment.model';
 import { IAppointmentRepository } from '../../repository/interfaces/IAppointmentRepository';
 
 class FakeAppointmentRepository implements IAppointmentRepository {
+    async findByPatientId(patientId: string): Promise<Appointment[]> {
+        return Array.from(this.items.values()).filter(appointment => appointment.getPatientId() === patientId);
+    }
+    async findByDoctorId(doctorId: string): Promise<Appointment[]> {
+        return Array.from(this.items.values()).filter(appointment => appointment.getDoctorId() === doctorId);
+    }
     private items = new Map<string, Appointment>();
     seed(a: Appointment) { this.items.set(a.getId(), a); }
     async findById(id: string) { return this.items.get(id) ?? null; }

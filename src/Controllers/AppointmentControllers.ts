@@ -3,16 +3,19 @@ import { CreateAppointmentUsecase } from "../usecases/Appointment/CreateAppointm
 import { DeleteAppointmentUsecase } from "../usecases/Appointment/DeleteAppointmentUsecase";
 import { GetAppointmentUsecase } from "../usecases/Appointment/getAppointmentUsecase";
 import { UpdateAppointmentUsecase } from "../usecases/Appointment/UpdateAppointmentUsecase";
-import { randomUUID } from "crypto"
 import { Appointment } from "../models/Appointment.model";
 import { NotFoundError } from "../util/exceptions/http/NotFoundError";
+import { GetDoctorAppointmentsUsecase } from "../usecases/Appointment/GetDoctorAppointmentUsecase";
+import { GetPatientAppointmentsUsecase } from "../usecases/Appointment/GetPatientAppointmentUsecase";
 export class AppointmentController{
     
     constructor(
         private readonly createAppointmentUsecase: CreateAppointmentUsecase,
         private readonly updateAppointmentUsecase: UpdateAppointmentUsecase,
         private readonly getAppointmentUsecase   : GetAppointmentUsecase,
-        private readonly deleteAppointmentUsecase: DeleteAppointmentUsecase
+        private readonly deleteAppointmentUsecase: DeleteAppointmentUsecase,
+        private readonly getDoctorAppointmentUsecase: GetDoctorAppointmentsUsecase,
+        private readonly getPatientAppointmentUsecase: GetPatientAppointmentsUsecase
     ){}
 
     createAppointment = async (req: Request, res: Response) => {
@@ -63,6 +66,22 @@ export class AppointmentController{
         const getAppointment = await this.getAppointmentUsecase.execute(id as string)
 
         res.status(200).json(this.toResponse(getAppointment))
+    }
+
+    getPatientAppointment = async (req: Request, res: Response) => {
+        const patientId = req.params.patientId as string;
+
+        const appointments = await this.getPatientAppointmentUsecase.execute(patientId);
+
+        res.status(200).json(appointments.map(a => this.toResponse(a)))
+    }
+
+    getDoctorAppointment = async (req: Request, res: Response) => {
+        const doctorID = req.params.doctorId as string;
+
+        const appointments = await this.getDoctorAppointmentUsecase.execute(doctorID);
+
+        res.status(200).json(appointments.map(a => this.toResponse(a)))
     }
 
     deleteAppointment = async (req: Request, res: Response) => {

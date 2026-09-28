@@ -100,3 +100,15 @@ model Appointment {
   updatedAt   DateTime          @updatedAt
 }
 
+
+model MedicalRecord {
+  id          String    @id @default(uuid())
+  patientId   String    @unique
+  patient     Patient   @relation(fields: [patientId], references: [id])
+  allergies   String[]
+  conditions  String[]
+  medications String[]
+  bloodType   String?   @db.VarChar(5)
+  notes       String?
+  updatedAt   DateTime  @updatedAt
+}

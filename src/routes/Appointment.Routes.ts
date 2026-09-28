@@ -9,6 +9,8 @@ export const AppointmentRoutes = (appointmentController: AppointmentController) 
     route.put('/:id', asyncHandler(appointmentController.updateAppointment))
     route.get('/:id', asyncHandler(appointmentController.getAppointmentById))
     route.delete('/:id', asyncHandler(appointmentController.deleteAppointment))
-
+    route.get('/patient/:patientId', asyncHandler(appointmentController.getPatientAppointment))
+    route.get('/doctor/:doctorId', asyncHandler(appointmentController.getDoctorAppointment))
+    
     return route
 }   
