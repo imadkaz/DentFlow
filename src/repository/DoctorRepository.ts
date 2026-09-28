@@ -61,4 +61,13 @@ export class DoctorRepository implements IDoctorRepository{
     async delete(id: string) : Promise<void> {
         await this.prisma.doctor.delete({ where: {id} });
     }
+
+    async findByClinicId(clinicId: string): Promise<Doctor[]> {
+        const rows = await this.prisma.doctor.findMany({
+            where: { clinicId },
+            orderBy: [ {name: 'desc'}, {licenseNo: 'desc'}, {specialty: 'desc'}]
+        })
+
+        return rows.map(DoctorMapper.toDomain)
+    }
 }

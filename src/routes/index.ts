@@ -28,6 +28,7 @@ import { CreateDoctorUsecase } from '../usecases/doctor/CreateDoctorUsecase';
 import { getDoctorUsecase } from '../usecases/doctor/GetDoctorUsecase';
 import { UpdateDoctorUsecase } from '../usecases/doctor/UpdateDoctorUsecase';
 import { DeleteDoctorUsecase } from '../usecases/doctor/DeleteDoctorUsecase';
+import { GetClinicDoctorUsecase } from '../usecases/doctor/GetClinicDoctorUsecase';
 
 const routes = Router();
 
@@ -55,7 +56,9 @@ const doctorController = new DoctorController(
     new CreateDoctorUsecase(doctorRepository, clinicRepository, userRepository),
     new UpdateDoctorUsecase(doctorRepository),
     new getDoctorUsecase(doctorRepository),
-    new DeleteDoctorUsecase(doctorRepository)
+    new DeleteDoctorUsecase(doctorRepository),
+    new GetClinicDoctorUsecase(doctorRepository, clinicRepository)
+
 )
 
 routes.use('/clinics', ClinicRoutes(clinicController));
