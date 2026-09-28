@@ -58,9 +58,9 @@ describe('CreateAppointmentUsecase', () => {
         patient = Patient.create({ id: 'p1', clinicId: 'c1', name: 'Ahmad', initials: 'AHK' });
         doctor = Doctor.create({ id: 'd1', clinicId: 'c1', userId: 'u1', name: 'Dr. Layla', licenseNo: 'LIC-1', createdAt: new Date() });
         useCase = new CreateAppointmentUsecase(
-            new FakeAppointmentRepository() as any,
-            new FakePatientRepository(patient) as any,
-            new FakeDoctorRepository(doctor) as any,
+            new FakeAppointmentRepository() as unknown as import('../../repository/AppointmentRepository').AppointmentRepository,
+            new FakePatientRepository(patient) as unknown as import('../../repository/PatientRepository').PatientRepository,
+            new FakeDoctorRepository(doctor) as unknown as import('../../repository/DoctorRepository').DoctorRepository,
         );
     });
 

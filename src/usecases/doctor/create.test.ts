@@ -9,6 +9,9 @@ import { User } from '../../models/User.model';
 
 class FakeDoctorRepository implements IDoctorRepository {
     private doctors = new Map<string, Doctor>();
+    async findByClinicId(clinicId: string): Promise<Doctor[]> {
+        return [...this.doctors.values()].filter(doctor => doctor.getClinicId() === clinicId);
+    }
     async findById(id: string) { return this.doctors.get(id) ?? null; }
     async findByEmail() { return null; }
     async findByLicenseNo(licenseNo: string) {
@@ -21,21 +24,21 @@ class FakeDoctorRepository implements IDoctorRepository {
 }
 
 class FakeClinicRepository implements IClinicRepository {
-    constructor(private clinic: Clinic | null) {}
+    constructor(private clinic: Clinic | null) { }
     async findById(id: string) { return this.clinic?.getId() === id ? this.clinic : null; }
     async findByEmail() { return null; }
     async save(c: Clinic) { return c; }
     async update(c: Clinic) { return c; }
-    async delete() {}
+    async delete() { }
 }
 
 class FakeUserRepository implements IUserRepository {
-    constructor(private user: User | null) {}
+    constructor(private user: User | null) { }
     async findById(id: string) { return this.user?.getId() === id ? this.user : null; }
     async findByEmail() { return null; }
     async save(u: User) { return u; }
     async update(u: User) { return u; }
-    async delete() {}
+    async delete() { }
 }
 
 describe('CreateDoctorUsecase', () => {

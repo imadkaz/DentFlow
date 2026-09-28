@@ -6,6 +6,9 @@ import { Patient } from '../../models/Patient.model';
 import { Clinic } from '../../models/Clinic.model';
 
 class FakePatientRepository implements IPatientRepository {
+    async findByClinicId(clinicId: string): Promise<Patient[]> {
+        return [...this.patients.values()].filter(patient => patient.getClinicId() === clinicId);
+    }
     private patients = new Map<string, Patient>();
     async findById(id: string) { return this.patients.get(id) ?? null; }
     async findByName(name: string) {

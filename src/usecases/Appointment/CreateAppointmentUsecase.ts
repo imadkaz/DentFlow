@@ -2,7 +2,6 @@ import { Appointment, AppointmentStatus } from "../../models/Appointment.model"
 import { AppointmentRepository } from "../../repository/AppointmentRepository";
 import { DoctorRepository } from "../../repository/DoctorRepository"
 import { PatientRepository } from "../../repository/PatientRepository"
-import { ConflictError } from "../../util/exceptions/http/ConflictError"
 import { randomUUID } from "crypto";
 import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
 

@@ -6,7 +6,6 @@ import { UpdatePatientUsecase } from "../usecases/Patient/UpdatePatientUsecase";
 import { Request, Response } from "express";
 import { NotFoundError } from "../util/exceptions/http/NotFoundError";
 import { GetClinicPatientUsecase } from "../usecases/Patient/GetClinicpatientUsecase";
-import { cli } from "winston/lib/winston/config";
 export class PatientController {
 
     constructor(
