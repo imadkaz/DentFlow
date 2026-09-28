@@ -44,6 +44,8 @@ import { UpdateAppointmentUsecase } from '../usecases/Appointment/UpdateAppointm
 import { AppointmentRoutes } from './Appointment.Routes';
 import { GetClinicPatientUsecase } from '../usecases/Patient/GetClinicpatientUsecase';
 import { GetClinicDoctorUsecase } from '../usecases/doctor/GetClinicDoctorUsecase';
+import { GetPatientAppointmentsUsecase } from '../usecases/Appointment/GetPatientAppointmentUsecase';
+import { GetDoctorAppointmentsUsecase } from '../usecases/Appointment/GetDoctorAppointmentUsecase';
 
 const routes = Router();
 
@@ -92,7 +94,9 @@ const appointmentController = new AppointmentController(
     new CreateAppointmentUsecase(appointmentRepository, patientRepository, doctorRepository),
     new UpdateAppointmentUsecase(appointmentRepository),
     new GetAppointmentUsecase(appointmentRepository),
-    new DeleteAppointmentUsecase(appointmentRepository)
+    new DeleteAppointmentUsecase(appointmentRepository),
+    new GetDoctorAppointmentsUsecase(appointmentRepository, doctorRepository),
+    new GetPatientAppointmentsUsecase(appointmentRepository, patientRepository)
 )
 
 routes.use('/clinics', ClinicRoutes(clinicController));

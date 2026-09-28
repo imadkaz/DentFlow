@@ -32,4 +32,21 @@ export class AppointmentRepository implements IAppointmentRepository {
         await this.prisma.appointment.delete({ where: { id } })
     }
 
+    async findByPatientId(patientId: string): Promise<Appointment[]> {
+        const rows = await this.prisma.appointment.findMany({
+            where: { patientId },
+            orderBy: [{ apptDate: 'asc' }, { apptTime: 'asc' }]
+        })
+
+        return rows.map(AppointmentMapper.toDomain)
+    }
+
+    async findByDoctorId(doctorId: string): Promise<Appointment[]> {
+        const rows = await this.prisma.appointment.findMany({
+            where: { doctorId },
+            orderBy: [ { apptDate: 'asc' }, { apptTime: 'asc' } ]
+        })
+
+        return rows.map(AppointmentMapper.toDomain)
+    }
 }

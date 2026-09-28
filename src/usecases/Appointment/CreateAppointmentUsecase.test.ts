@@ -10,10 +10,17 @@ import { Doctor } from '../../models/Doctor.model';
 
 class FakeAppointmentRepository implements IAppointmentRepository {
     private items = new Map<string, Appointment>();
+    async findByPatientId(patientId: string): Promise<Appointment[]> {
+        return [...this.items.values()].filter(appointment => appointment.getPatientId() === patientId);
+    }
+    async findByDoctorId(doctorId: string): Promise<Appointment[]> {
+        return [...this.items.values()].filter(appointment => appointment.getDoctorId() === doctorId);
+    }
     async findById(id: string) { return this.items.get(id) ?? null; }
     async save(a: Appointment) { this.items.set(a.getId(), a); return a; }
     async update(a: Appointment) { this.items.set(a.getId(), a); return a; }
     async delete(id: string) { this.items.delete(id); }
+
 }
 
 class FakePatientRepository implements IPatientRepository {
