@@ -1,3 +1,5 @@
+import { ValidationError } from "../util/exceptions/http/ValidationError";
+
 // src/models/Appointment.model.ts
 export enum AppointmentStatus {
     CONFIRMED = 'confirmed',
@@ -34,7 +36,7 @@ export class Appointment {
         private notes: string | null,
         private readonly createdAt: Date,
         private updatedAt: Date,
-    ) {}
+    ) { }
 
     static create(props: AppointmentProps): Appointment {
         const trimmedProcedure = props.procedure?.trim() ?? '';
@@ -46,6 +48,12 @@ export class Appointment {
         }
         if (props.durationMin !== undefined && props.durationMin <= 0) {
             throw new Error('Appointment duration must be greater than zero');
+        }
+        if (isNaN(props.apptDate.getTime())) {
+            throw new ValidationError('Appointment date is invalid');
+        }
+        if (isNaN(props.apptTime.getTime())) {
+            throw new ValidationError('Appointment time is invalid');
         }
 
         const now = new Date();

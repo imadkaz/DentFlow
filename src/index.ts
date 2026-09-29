@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import logger from './util/logger';
@@ -9,6 +9,7 @@ import { NotFoundError } from './util/exceptions/http/NotFoundError';
 import { ConflictError } from './util/exceptions/http/ConflictError';
 import requestLogger from './middleware/requestLogger';
 import routes from './routes';
+import { ValidationError } from './util/exceptions/http/ValidationError';
 
 
 const app = express();
@@ -48,12 +49,15 @@ app.use((req, res) => {
 });
 
 
-app.use((err: Error, req: Request, res: Response) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof NotFoundError) {
         return res.status(404).json({ message: err.message });
     }
     if (err instanceof ConflictError) {
         return res.status(409).json({ message: err.message });
+    }
+    if (err instanceof ValidationError) {         
+        return res.status(400).json({ message: err.message });
     }
     if (err instanceof HttpException) {
         return res.status(err.status).json({

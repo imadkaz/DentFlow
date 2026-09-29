@@ -25,8 +25,8 @@ export class AppointmentController{
             patientId: input.patientId,
             doctorId : input.doctorId,
             procedure: input.procedure,
-            apptDate : input.apptDate,
-            apptTime : input.apptTime,
+            apptDate : new Date(input.apptDate),
+            apptTime : new Date(input.apptTime),
             durationMin: input.durationMin,
             status: input.status,
             notes: input.notes
@@ -46,8 +46,8 @@ export class AppointmentController{
         const update = await this.updateAppointmentUsecase.execute({
             id,
             procedure: input.procedure,
-            apptDate : input.apptDate,
-            apptTime : input.apptTime,
+            apptDate : new Date(input.apptDate),
+            apptTime : new Date(input.apptTime),
             durationMin: input.durationMin,
             status: input.status,
             notes: input.notes
