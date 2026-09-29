@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Doctor } from './Doctor.model';
+import { Doctor } from '../Doctor.model';
 
 describe('Doctor', () => {
     it('creates a valid doctor', () => {

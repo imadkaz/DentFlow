@@ -56,7 +56,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof ConflictError) {
         return res.status(409).json({ message: err.message });
     }
-    if (err instanceof ValidationError) {         
+    if (err instanceof ValidationError) {
         return res.status(400).json({ message: err.message });
     }
     if (err instanceof HttpException) {
@@ -67,9 +67,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     }
 
     logger.error('Unhandled Error: %s', err.message);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return next(err);
 });
 
-app.listen(config.port,config.host, () => {
+app.listen(config.port, config.host, () => {
     logger.info('Server is running on port %d', config.port);
 });

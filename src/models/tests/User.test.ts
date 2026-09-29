@@ -2,17 +2,17 @@ import 'dotenv/config';   // ✅ أول سطر
 
 
 import { afterEach, describe, it, expect } from "vitest";
-import { prisma } from "../db";
-import { UserRepository } from "../repository/userRepository";
-import { User } from "../models/User.model";
+import { prisma } from "../../db";
+import { UserRepository } from "../../repository/userRepository";
+import { User } from "../User.model";
 import { randomUUID } from "node:crypto";
-import { NotFoundError } from '../util/exceptions/http/NotFoundError';
+import { NotFoundError } from '../../util/exceptions/http/NotFoundError';
 
 const userRepository = new UserRepository(prisma);
 const createdIds: string[] = [];
 
 afterEach(async () => {
-    
+
     for (const id of createdIds) {
         await prisma.user.deleteMany({ where: { id } });
     }
@@ -54,7 +54,7 @@ describe('UserRepository (integration)', () => {
             email,
             passwordHash: 'hashedpassword',
         });
-        try{
+        try {
             const savedUser = await userRepository.save(user);
             createdIds.push(savedUser.getId());
 

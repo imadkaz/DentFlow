@@ -1,6 +1,6 @@
 // src/models/Appointment.test.ts
 import { describe, it, expect } from 'vitest';
-import { Appointment, AppointmentStatus } from './Appointment.model';
+import { Appointment, AppointmentStatus } from '../Appointment.model';
 
 describe('Appointment', () => {
     it('creates an appointment with defaults', () => {

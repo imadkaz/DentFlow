@@ -1,12 +1,12 @@
-import { Clinic } from './Clinic.model';
+import { Clinic } from '../Clinic.model';
 
 // src/repository/ClinicRepository.integration.test.ts
 
 import 'dotenv/config';
 import { randomUUID } from 'node:crypto';
 import { describe, it, expect, afterEach } from 'vitest';
-import { prisma } from '../db';
-import { ClinicRepository } from '../repository/ClinicRepository';
+import { prisma } from '../../db';
+import { ClinicRepository } from '../../repository/ClinicRepository';
 
 const clinicRepository = new ClinicRepository(prisma);
 
@@ -27,7 +27,7 @@ describe('ClinicRepository (integration)', () => {
             name: 'Integration Test Clinic',
             email: `test-${Date.now()}@example.com`,
         });
-        
+
         const saved = await clinicRepository.save(clinic);
         createdIds.push(saved.getId());
 

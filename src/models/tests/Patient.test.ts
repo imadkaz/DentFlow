@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Patient, PatientStatus } from './Patient.model';
+import { Patient, PatientStatus } from '../Patient.model';
 
 describe('Patient', () => {
     it('creates a patient with defaults when optional fields are omitted', () => {
