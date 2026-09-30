@@ -75,7 +75,7 @@ describe('MedicalRecordMapper', () => {
         bloodType: 'AB+',
         notes: null,
         updatedAt: new Date('2024-02-02T00:00:00Z'),
-    } as any;
+    };
 
     it('toDomain maps every field', () => {
         const d = MedicalRecordMapper.toDomain(raw);
@@ -129,7 +129,9 @@ describe('MedicalRecordRepository', () => {
 
     it('findById returns a domain object or null', async () => {
         const prisma = makePrisma();
-        const repo = new MedicalRecordRepository(prisma as any);
+        const repo = new MedicalRecordRepository(
+            prisma as unknown as ConstructorParameters<typeof MedicalRecordRepository>[0],
+        );
 
         prisma.medicalRecord.findUnique.mockResolvedValueOnce(rawRow);
         expect((await repo.findById('rec-1'))?.getId()).toBe('rec-1');
@@ -143,7 +145,9 @@ describe('MedicalRecordRepository', () => {
         const prisma = makePrisma();
         prisma.medicalRecord.findUnique.mockResolvedValue(rawRow);
         prisma.medicalRecord.findFirst.mockResolvedValue(rawRow);
-        const repo = new MedicalRecordRepository(prisma as any);
+        const repo = new MedicalRecordRepository(
+            prisma as unknown as ConstructorParameters<typeof MedicalRecordRepository>[0],
+        );
 
         await repo.findByPatient('pat-1');
 
@@ -156,7 +160,9 @@ describe('MedicalRecordRepository', () => {
     it('save persists and maps the result', async () => {
         const prisma = makePrisma();
         prisma.medicalRecord.create.mockResolvedValue(rawRow);
-        const repo = new MedicalRecordRepository(prisma as any);
+        const repo = new MedicalRecordRepository(
+            prisma as unknown as ConstructorParameters<typeof MedicalRecordRepository>[0],
+        );
 
         const saved = await repo.save(makeRecord());
         expect(prisma.medicalRecord.create).toHaveBeenCalledTimes(1);
@@ -166,7 +172,9 @@ describe('MedicalRecordRepository', () => {
     it('update targets the record id', async () => {
         const prisma = makePrisma();
         prisma.medicalRecord.update.mockResolvedValue(rawRow);
-        const repo = new MedicalRecordRepository(prisma as any);
+        const repo = new MedicalRecordRepository(
+            prisma as unknown as ConstructorParameters<typeof MedicalRecordRepository>[0],
+        );
 
         await repo.update(makeRecord());
         expect(prisma.medicalRecord.update).toHaveBeenCalledWith(
@@ -176,7 +184,9 @@ describe('MedicalRecordRepository', () => {
 
     it('delete removes by id', async () => {
         const prisma = makePrisma();
-        const repo = new MedicalRecordRepository(prisma as any);
+        const repo = new MedicalRecordRepository(
+            prisma as unknown as ConstructorParameters<typeof MedicalRecordRepository>[0],
+        );
 
         await repo.delete('rec-1');
         expect(prisma.medicalRecord.delete).toHaveBeenCalledWith({ where: { id: 'rec-1' } });
@@ -428,7 +438,11 @@ describe('MedicalController', () => {
         );
 
     const makeRes = () => {
-        const res: any = {};
+        const res = {} as {
+            status: ReturnType<typeof jest.fn>;
+            json: ReturnType<typeof jest.fn>;
+            send: ReturnType<typeof jest.fn>;
+        };
         res.status = jest.fn().mockReturnValue(res);
         res.json = jest.fn().mockReturnValue(res);
         res.send = jest.fn().mockReturnValue(res);
@@ -460,7 +474,10 @@ describe('MedicalController', () => {
             notes: 'n',
         };
 
-        await makeController(u).CreateMedical({ body } as any, res);
+        await makeController(u).CreateMedical(
+            { body } as unknown as Parameters<MedicalController['CreateMedical']>[0],
+            res as unknown as Parameters<MedicalController['CreateMedical']>[1],
+        );
 
         expect(u.create.execute).toHaveBeenCalledWith(body);
         expect(res.status).toHaveBeenCalledWith(201);
@@ -474,8 +491,10 @@ describe('MedicalController', () => {
         const res = makeRes();
 
         await makeController(u).UpdateMedical(
-            { params: { id: 'rec-1' }, body: { notes: 'changed' } } as any,
-            res,
+            { params: { id: 'rec-1' }, body: { notes: 'changed' } } as unknown as Parameters<
+                MedicalController['UpdateMedical']
+            >[0],
+            res as unknown as Parameters<MedicalController['UpdateMedical']>[1],
         );
 
         expect(u.update.execute).toHaveBeenCalledWith(expect.objectContaining({ id: 'rec-1' }));
@@ -486,7 +505,12 @@ describe('MedicalController', () => {
     it('UpdateMedical throws NotFoundError without an id', async () => {
         const u = makeUsecases();
         await expect(
-            makeController(u).UpdateMedical({ params: {}, body: {} } as any, makeRes()),
+            makeController(u).UpdateMedical(
+                { params: {}, body: {} } as unknown as Parameters<
+                    MedicalController['UpdateMedical']
+                >[0],
+                makeRes() as unknown as Parameters<MedicalController['UpdateMedical']>[1],
+            ),
         ).rejects.toBeInstanceOf(NotFoundError);
     });
 
@@ -496,7 +520,10 @@ describe('MedicalController', () => {
         u.get.execute.mockResolvedValue(record);
         const res = makeRes();
 
-        await makeController(u).GetMedical({ params: { id: 'rec-1' } } as any, res);
+        await makeController(u).GetMedical(
+            { params: { id: 'rec-1' } } as unknown as Parameters<MedicalController['GetMedical']>[0],
+            res as unknown as Parameters<MedicalController['GetMedical']>[1],
+        );
 
         expect(u.get.execute).toHaveBeenCalledWith('rec-1');
         expect(res.status).toHaveBeenCalledWith(200);
@@ -506,7 +533,10 @@ describe('MedicalController', () => {
     it('GetMedical throws NotFoundError without an id', async () => {
         const u = makeUsecases();
         await expect(
-            makeController(u).GetMedical({ params: {} } as any, makeRes()),
+            makeController(u).GetMedical(
+                { params: {} } as unknown as Parameters<MedicalController['GetMedical']>[0],
+                makeRes() as unknown as Parameters<MedicalController['GetMedical']>[1],
+            ),
         ).rejects.toBeInstanceOf(NotFoundError);
     });
 
@@ -517,8 +547,10 @@ describe('MedicalController', () => {
         const res = makeRes();
 
         await makeController(u).GetPatientMedical(
-            { params: { patientId: 'pat-1' } } as any,
-            res,
+            { params: { patientId: 'pat-1' } } as unknown as Parameters<
+                MedicalController['GetPatientMedical']
+            >[0],
+            res as unknown as Parameters<MedicalController['GetPatientMedical']>[1],
         );
 
         expect(u.getPatient.execute).toHaveBeenCalledWith('pat-1');
@@ -532,7 +564,10 @@ describe('MedicalController', () => {
         u.del.execute.mockResolvedValue(undefined);
         const res = makeRes();
 
-        await makeController(u).DeleteMedical({ params: { id: 'rec-1' } } as any, res);
+        await makeController(u).DeleteMedical(
+            { params: { id: 'rec-1' } } as unknown as Parameters<MedicalController['DeleteMedical']>[0],
+            res as unknown as Parameters<MedicalController['DeleteMedical']>[1],
+        );
 
         expect(u.del.execute).toHaveBeenCalledWith('rec-1');
         expect(res.status).toHaveBeenCalledWith(204);
@@ -542,7 +577,10 @@ describe('MedicalController', () => {
     it('DeleteMedical throws NotFoundError without an id', async () => {
         const u = makeUsecases();
         await expect(
-            makeController(u).DeleteMedical({ params: {} } as any, makeRes()),
+            makeController(u).DeleteMedical(
+                { params: {} } as unknown as Parameters<MedicalController['DeleteMedical']>[0],
+                makeRes() as unknown as Parameters<MedicalController['DeleteMedical']>[1],
+            ),
         ).rejects.toBeInstanceOf(NotFoundError);
     });
 });
