@@ -1,7 +1,7 @@
 import { PrismaClient } from "../generated/prisma/client";
 import { MedicalRecordMapper } from "../mapper/MedicalRecord.mapper";
 import { MedicalRecord } from "../models/MedicalRecord.model";
-import { IMedicalRecord } from "./interfaces/IMedicalRecord";
+import { IMedicalRecord } from "./interfaces/IMedicalRecordRepository";
 
 export class MedicalRecordRepository implements IMedicalRecord{
 
@@ -14,9 +14,9 @@ export class MedicalRecordRepository implements IMedicalRecord{
 
         return row ? MedicalRecordMapper.toDomain(row) : null;
     }
-    async findByPatient(id: string): Promise<MedicalRecord | null> {
+    async findByPatient(patientId: string): Promise<MedicalRecord | null> {
         const row = await this.prisma.medicalRecord.findUnique({
-            where: {id}
+            where: {patientId}
         })
 
         return row ? MedicalRecordMapper.toDomain(row) : null;

@@ -16,7 +16,7 @@ export class MedicalController {
         private readonly getPatientMedicalUsecase: GetPatientMedicalUsecase,
     ){}
 
-    createMedical = async (req: Request, res: Response) => {
+    CreateMedical = async (req: Request, res: Response) => {
         const input = req.body;
         
         const createMedical = await this.createMedicalUsecase.execute({
@@ -40,13 +40,12 @@ export class MedicalController {
         }
 
         const updateMedical = await this.updateMedicalUsecase.execute({
-            id: input.id,
+            id,
             allergies: input.allergies,
             conditions: input.conditions,
             medications: input.medications,
             bloodType: input.bloodType,
             notes: input.notes,
-            updatedAt: input.updatedAt
         })
 
         res.status(200).json(this.toResponse(updateMedical))
@@ -64,12 +63,16 @@ export class MedicalController {
     }
 
     GetPatientMedical = async (req: Request, res: Response) => {
-        const id = req.params.id as string;
+        const id = req.params.patientId as string;
         if(!id){
             throw new NotFoundError("Medical not found!")
         }
 
-        const getPatientMedical = await this.getMedicalUsecase.execute(id)
+        const getPatientMedical = await this.getPatientMedicalUsecase.execute(id)
+
+        if (!getPatientMedical) {
+            throw new NotFoundError("Medical not found!")
+        }
 
         res.status(200).json(this.toResponse(getPatientMedical))
     }

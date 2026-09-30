@@ -28,6 +28,8 @@ import { CreateDoctorUsecase } from '../usecases/doctor/CreateDoctorUsecase';
 import { getDoctorUsecase } from '../usecases/doctor/GetDoctorUsecase';
 import { UpdateDoctorUsecase } from '../usecases/doctor/UpdateDoctorUsecase';
 import { DeleteDoctorUsecase } from '../usecases/doctor/DeleteDoctorUsecase';
+
+// Patient
 import { PatientRepository } from '../repository/PatientRepository';
 import { PatientController } from '../Controllers/PatientController';
 import { CreatePatientUsecase } from '../usecases/Patient/CreatePatientUsecase';
@@ -35,6 +37,8 @@ import { UpdatePatientUsecase } from '../usecases/Patient/UpdatePatientUsecase';
 import { GetPatientUsecase } from '../usecases/Patient/GetPatientUsecase';
 import { DeletePatientUsecase } from '../usecases/Patient/DeletepatientUsecase';
 import { PatientRoutes } from './Patient.Routes';
+
+// Appointment
 import { AppointmentRepository } from '../repository/AppointmentRepository';
 import { AppointmentController } from '../Controllers/AppointmentControllers';
 import { CreateAppointmentUsecase } from '../usecases/Appointment/CreateAppointmentUsecase';
@@ -46,6 +50,16 @@ import { GetClinicPatientUsecase } from '../usecases/Patient/GetClinicpatientUse
 import { GetClinicDoctorUsecase } from '../usecases/doctor/GetClinicDoctorUsecase';
 import { GetPatientAppointmentsUsecase } from '../usecases/Appointment/GetPatientAppointmentUsecase';
 import { GetDoctorAppointmentsUsecase } from '../usecases/Appointment/GetDoctorAppointmentUsecase';
+import { MedicalRecordRepository } from '../repository/MedicalRecordRepository';
+import { MedicalController } from '../Controllers/MedicalController';
+import { CreateMedialUsecase } from '../usecases/MedicalRecord/CreateMedicalUsecase';
+import { UpdateMedicalUsecase } from '../usecases/MedicalRecord/UpdateMedicalUsecase';
+import { DeleteMedicalUsecase } from '../usecases/MedicalRecord/DeleteMedicalUsecase';
+import { GetMedicalUsecase } from '../usecases/MedicalRecord/getMedicalUsecase';
+import { GetPatientMedicalUsecase } from '../usecases/MedicalRecord/GetPatientMedicalUsecase';
+import { MedicalRoutes } from './Medical.Routes';
+
+
 
 const routes = Router();
 
@@ -99,10 +113,22 @@ const appointmentController = new AppointmentController(
     new GetPatientAppointmentsUsecase(appointmentRepository, patientRepository)
 )
 
+// ---- Medical Record wiring ----
+
+const medicalRecordRepository = new MedicalRecordRepository(prisma)
+const medicalRecordController = new MedicalController(
+    new CreateMedialUsecase(medicalRecordRepository, patientRepository),
+    new UpdateMedicalUsecase(medicalRecordRepository),
+    new DeleteMedicalUsecase(medicalRecordRepository),
+    new GetMedicalUsecase(medicalRecordRepository),
+    new GetPatientMedicalUsecase(medicalRecordRepository)
+)
+
 routes.use('/clinics', ClinicRoutes(clinicController));
 routes.use('/users', UserRoutes(userController));
 routes.use('/doctors', DoctorRoutes(doctorController));
 routes.use('/patients', PatientRoutes(patientController));
 routes.use('/appointments', AppointmentRoutes(appointmentController));
+routes.use('/medical-record', MedicalRoutes(medicalRecordController))
 
 export default routes;

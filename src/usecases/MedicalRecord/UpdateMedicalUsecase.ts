@@ -4,12 +4,11 @@ import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
 
 export interface UpdateMedicalInput{
     id: string,
-    allergies?: string[] | [],
-    conditions?: string[] | [],
-    medications?: string[] | [],
+    allergies?: string[],
+    conditions?: string[],
+    medications?: string[],
     bloodType?: BloodType,
     notes?: string | null
-    updatedAt: Date
 }
 
 export class UpdateMedicalUsecase{

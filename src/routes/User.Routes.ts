@@ -9,7 +9,7 @@ export function UserRoutes(userController: UserController): Router {
     router.post('/', asyncHandler(userController.createUser));
     router.get('/:id', asyncHandler(userController.getUserById));
     router.get('/email/:email', asyncHandler(userController.getUserByEmail));
-    router.put('/:id', asyncHandler(userController.updateUser));
+    router.patch('/:id', asyncHandler(userController.updateUser));
     router.delete('/:id', asyncHandler(userController.deleteUser));
 
     return router;

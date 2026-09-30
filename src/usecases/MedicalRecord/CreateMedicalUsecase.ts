@@ -9,7 +9,7 @@ export interface CreateMedicalInput{
     allergies: string[],
     conditions: string[],
     medications: string[],
-    bloodType?: BloodType,
+    bloodType?: BloodType | null,
     notes?: string | null
 }
 
@@ -32,8 +32,8 @@ export class CreateMedialUsecase {
             allergies: input.allergies,
             conditions: input.conditions,
             medications: input.medications,
-            bloodType: input.bloodType,
-            notes: input.bloodType
+            bloodType: input.bloodType ?? null,
+            notes: input.notes ?? null
         });
 
         return await this.medicalRepository.save(medicalRecord)

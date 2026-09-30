@@ -1,4 +1,5 @@
 export enum BloodType {
+    DEFAULT = 'null',
     A_POSITIVE = 'A+',
     A_NEGATIVE = 'A-',
     B_POSITIVE = 'B+',
@@ -27,7 +28,7 @@ export class MedicalRecord {
         private allergies: string[],
         private conditions: string[],
         private medications: string[],
-        private bloodType: BloodType,
+        private bloodType: BloodType | null,
         private notes: string | null,
         private updatedAt: Date
     ) { }
@@ -40,7 +41,7 @@ export class MedicalRecord {
             props.allergies ?? [],
             props.conditions ?? [],
             props.medications ?? [],
-            props.bloodType ?? BloodType.A_POSITIVE,
+            props.bloodType ?? null,
             props.notes ?? null,
             props.updatedAt ?? now
         )
@@ -51,7 +52,7 @@ export class MedicalRecord {
     getAllergies(): string[] { return this.allergies }
     getConditions(): string[] { return this.conditions }
     getMedications(): string[] { return this.medications }
-    getBloodType(): BloodType { return this.bloodType }
+    getBloodType(): BloodType | null { return this.bloodType }
     getNotes(): string | null { return this.notes }
     getUpdatedAt(): Date { return this.updatedAt }
 }

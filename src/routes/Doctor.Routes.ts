@@ -6,7 +6,7 @@ export const  DoctorRoutes = (doctorController: DoctorController) : Router => {
     const route = Router();
 
     route.post('/', asyncHandler(doctorController.createDoctor))
-    route.put('/:id', asyncHandler(doctorController.updateDoctor))
+    route.patch('/:id', asyncHandler(doctorController.updateDoctor))
     route.get('/:id', asyncHandler(doctorController.getDoctorById))
     route.get('/email/:email', asyncHandler(doctorController.getDoctorByEmail))
     route.get('/lecenseNo/:licenseNo', asyncHandler(doctorController.getDoctorByLicenseNo))

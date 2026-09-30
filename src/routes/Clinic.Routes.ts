@@ -9,7 +9,7 @@ export function ClinicRoutes(clinicControllers: ClinicControllers): Router {
     router.get('/:id', asyncHandler(clinicControllers.getClinicById));
     router.get('/email/:email', asyncHandler(clinicControllers.getClinicByEmail));
     router.delete('/:id', asyncHandler(clinicControllers.deleteClinic));
-    router.put('/:id', asyncHandler(clinicControllers.updateClinic));
+    router.patch('/:id', asyncHandler(clinicControllers.updateClinic));
 
     return router;
 }
