@@ -1,11 +1,22 @@
-import { PrismaClient } from "../generated/prisma/client";
+import { Prisma, PrismaClient } from "../generated/prisma/client";
 import { AppointmentMapper } from "../mapper/Appointment.mapper";
 import { Appointment } from "../models/Appointment.model";
+import { ConflictError } from "../util/exceptions/http/ConflictError";
 import { IAppointmentRepository } from "./interfaces/IAppointmentRepository";
 
 export class AppointmentRepository implements IAppointmentRepository {
 
     constructor(private readonly prisma: PrismaClient) { }
+
+
+    async findByDoctorAndDate(doctorId: string, apptDate: Date): Promise<Appointment[]> {
+    const startOfDay = new Date(Date.UTC(apptDate.getUTCFullYear(), apptDate.getUTCMonth(), apptDate.getUTCDate(), 0, 0, 0));
+    const endOfDay = new Date(Date.UTC(apptDate.getUTCFullYear(), apptDate.getUTCMonth(), apptDate.getUTCDate(), 23, 59, 59));
+    const rows = await this.prisma.appointment.findMany({
+        where: { doctorId, apptDate: { gte: startOfDay, lte: endOfDay } },
+    });
+    return rows.map(AppointmentMapper.toDomain);
+}
 
     async findById(id: string): Promise<Appointment | null> {
         const raw = await this.prisma.appointment.findUnique({ where: { id } })
@@ -14,10 +25,17 @@ export class AppointmentRepository implements IAppointmentRepository {
     }
 
     async save(entity: Appointment): Promise<Appointment> {
-        const raw = await this.prisma.appointment.create({
-            data: AppointmentMapper.toPersistence(entity)
-        })
-        return AppointmentMapper.toDomain(raw)
+        try {
+            const raw = await this.prisma.appointment.create({
+                data: AppointmentMapper.toPersistence(entity),
+            });
+            return AppointmentMapper.toDomain(raw);
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+                throw new ConflictError('An appointment already exists for this doctor at this exact date and time');
+            }
+            throw error;
+        }
     }
 
     async update(entity: Appointment): Promise<Appointment> {

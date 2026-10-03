@@ -71,5 +71,5 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.listen(config.port, config.host, () => {
-    logger.info('Server is running on port %d', config.port);
+    logger.info('Server is running on port %d');
 });
