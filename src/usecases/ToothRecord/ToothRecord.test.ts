@@ -19,15 +19,16 @@ class FakeToothRepository implements IToothRecordRepository {
 }
 
 class FakePatientRepository implements IPatientRepository {
-    constructor(private patient: Patient | null) {}
-    findByClinicId(clinicId: string): Promise<Patient[]> {
-        throw new Error('Method not implemented.');
+    constructor(private patient: Patient | null) { }
+
+    findByClinicId(_clinicId: string): Promise<Patient[]> {
+        return Promise.resolve(this.patient?.getClinicId() === _clinicId ? [this.patient] : []);
     }
     async findById(id: string) { return this.patient?.getId() === id ? this.patient : null; }
     async findByName() { return []; }
     async save(p: Patient) { return p; }
     async update(p: Patient) { return p; }
-    async delete() {}
+    async delete() { }
 }
 
 describe('UpsertToothRecordUsecase', () => {
