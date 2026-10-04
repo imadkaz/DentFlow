@@ -1,0 +1,9 @@
+0000000000000000000000000000000000000000 1732d4a62a3e4ad56c60163539efd6380e7f27e4 imadkaz <ikazbour3@gmail.com> 1789509803 +0300	branch: Created from HEAD
+1732d4a62a3e4ad56c60163539efd6380e7f27e4 e76f6c9c946ed2fcb4cf4d36fce1ef9ac5224aa3 imadkaz <ikazbour3@gmail.com> 1789557137 +0300	commit: fix(clinic): return 201 status code on clinic creation
+e76f6c9c946ed2fcb4cf4d36fce1ef9ac5224aa3 d7c3fb105f5361b6d69308e7128558b27c12c293 imadkaz <ikazbour3@gmail.com> 1789557151 +0300	commit: chore: remove unused IMapper interface, minor cleanup
+d7c3fb105f5361b6d69308e7128558b27c12c293 f6f01cdd54db2210e1515b55670873b2736306e3 imadkaz <ikazbour3@gmail.com> 1789557167 +0300	commit: feat(patient): add Patient entity, repository, use cases, and validation
+f6f01cdd54db2210e1515b55670873b2736306e3 f08f25057aca77d9a53a6fdced4d317dc66fd52d imadkaz <ikazbour3@gmail.com> 1789759507 +0300	pull origin main: Merge made by the 'ort' strategy.
+f08f25057aca77d9a53a6fdced4d317dc66fd52d 6ed33e95c14f44638eb4f5de83112e8a7b7ae22b imadkaz <ikazbour3@gmail.com> 1789764930 +0300	commit: test(patient): add unit and integration tests for Patient module
+6ed33e95c14f44638eb4f5de83112e8a7b7ae22b 6bf5953e6d908ddb6a0db11105fd65d24d39afa7 imadkaz <ikazbour3@gmail.com> 1790600772 +0300	merge origin/main: Fast-forward
+6bf5953e6d908ddb6a0db11105fd65d24d39afa7 b2d32d974bf472f805385905cc263d335cab3416 imadkaz <ikazbour3@gmail.com> 1790601925 +0300	commit: feature(patient) add a new functions the clinic can know his patients
+b2d32d974bf472f805385905cc263d335cab3416 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790603104 +0300	merge origin: Fast-forward

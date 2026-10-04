@@ -1,0 +1,36 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[remote "origin"]
+	url = https://github.com/imadkaz/DentFlow.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "main"]
+	remote = origin
+	vscode-merge-base = origin/main
+	merge = refs/heads/main
+[branch "feature/user-module"]
+	vscode-merge-base = origin/main
+[branch "feature/doctor-module"]
+	vscode-merge-base = origin/main
+	remote = origin
+	merge = refs/heads/feature/doctor-module
+[branch "feature/patient-module"]
+	vscode-merge-base = origin/main
+	remote = origin
+	merge = refs/heads/feature/patient-module
+[branch "feature/appointment-model"]
+	vscode-merge-base = origin/main
+	remote = origin
+	merge = refs/heads/feature/appointment-model
+[branch "feature/medicalRecord-module"]
+	vscode-merge-base = origin/main
+	remote = origin
+	merge = refs/heads/feature/medicalRecord-module
+[branch "feature/tooth-record"]
+	vscode-merge-base = origin/main
+	remote = origin
+	merge = refs/heads/feature/tooth-record

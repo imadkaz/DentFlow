@@ -1,0 +1,7 @@
+0000000000000000000000000000000000000000 23ae64d8d9f062adc48ac5a38b82bcc4346eebf5 imadkaz <ikazbour3@gmail.com> 1790107399 +0300	branch: Created from HEAD
+23ae64d8d9f062adc48ac5a38b82bcc4346eebf5 dd87c6c62791ac5311964a6208763f7f5e0f9ef9 imadkaz <ikazbour3@gmail.com> 1790524814 +0300	commit: feat(Appointment): add Appointment entity, repository, use cases, controller and validation
+dd87c6c62791ac5311964a6208763f7f5e0f9ef9 06faeb84ac1ca4fe11081aed973ae33774dd6634 imadkaz <ikazbour3@gmail.com> 1790524875 +0300	commit: feat(Appointment): add Appointment entity, repository, use cases, controller and validation
+06faeb84ac1ca4fe11081aed973ae33774dd6634 53fd52cbdff18a92045cd054bbbb46f3a1bd01cc imadkaz <ikazbour3@gmail.com> 1790599118 +0300	commit: feature(appointment): add a new funtions can the patient and the doctor know her own appointment scheduled
+53fd52cbdff18a92045cd054bbbb46f3a1bd01cc 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790602976 +0300	merge origin/main: Fast-forward
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 6cd726e0780be790960a4d843acb6e34b1e12d78 imadkaz <ikazbour3@gmail.com> 1790976728 +0300	pull origin main: Fast-forward
+6cd726e0780be790960a4d843acb6e34b1e12d78 96ecda57e57560f174b0ca3595b2495a3d3b8a42 imadkaz <ikazbour3@gmail.com> 1791060567 +0300	commit: feature(appointment): add an appointment unique slot

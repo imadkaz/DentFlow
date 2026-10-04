@@ -1,0 +1,5 @@
+0000000000000000000000000000000000000000 6bf5953e6d908ddb6a0db11105fd65d24d39afa7 imadkaz <ikazbour3@gmail.com> 1790596241 +0300	branch: Created from HEAD
+6bf5953e6d908ddb6a0db11105fd65d24d39afa7 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790603225 +0300	merge origin/main: Fast-forward
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 0cc0b4d34773bd2aa2cf67b65168358d3434ed7f imadkaz <ikazbour3@gmail.com> 1790669637 +0300	pull origin main: Fast-forward
+0cc0b4d34773bd2aa2cf67b65168358d3434ed7f 14bf7a027a192d639b01fbed75653c0207240317 imadkaz <ikazbour3@gmail.com> 1790724446 +0300	commit: feature(medicalRecord): add the model, repository, usecases, controllers
+14bf7a027a192d639b01fbed75653c0207240317 c73445b2e9ac0ba888867631638bd6b166db6526 imadkaz <ikazbour3@gmail.com> 1790762324 +0300	commit: fixing problem in this feature, medical feature

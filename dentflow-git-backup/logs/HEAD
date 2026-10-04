@@ -1,0 +1,116 @@
+0000000000000000000000000000000000000000 c380119b185b7e5230f130617a86490afd5be78b imadkaz <ikazbour3@gmail.com> 1788398148 +0300	commit (initial): chore: initial project setup with TypeScript, Prisma, and PostgreSQL (Neon)
+c380119b185b7e5230f130617a86490afd5be78b 0b34be72547529754f950b289b6af17750027183 imadkaz <ikazbour3@gmail.com> 1788398239 +0300	commit: feat(clinic): add Clinic domain entity with validation
+0b34be72547529754f950b289b6af17750027183 4a8f6d46bb119430f7be51d32e9868215add87be imadkaz <ikazbour3@gmail.com> 1788398374 +0300	commit: feat(clinic): add repository, mapper, and Prisma integration for Clinic
+4a8f6d46bb119430f7be51d32e9868215add87be 983d64c4a21d97c8867e08452d85fcf033c8d4e4 imadkaz <ikazbour3@gmail.com> 1788398506 +0300	commit: feat(clinic): add Clinic use cases with domain-level errors
+983d64c4a21d97c8867e08452d85fcf033c8d4e4 98ebb5631b6ad106b19fd64456f7708a81c99b84 imadkaz <ikazbour3@gmail.com> 1788398543 +0300	commit: feat(clinic): expose Clinic module via Express REST API
+98ebb5631b6ad106b19fd64456f7708a81c99b84 5ec8e417d0ea3608a8e01a7e437b0b98ccdede93 imadkaz <ikazbour3@gmail.com> 1788398819 +0300	commit: missing files
+5ec8e417d0ea3608a8e01a7e437b0b98ccdede93 768aa231636993f2c29a68a655f57c390865b007 imadkaz <ikazbour3@gmail.com> 1788398976 +0300	commit: finish first feature
+768aa231636993f2c29a68a655f57c390865b007 0000000000000000000000000000000000000000 imadkaz <ikazbour3@gmail.com> 1788399001 +0300	Branch: renamed refs/heads/master to refs/heads/main
+0000000000000000000000000000000000000000 768aa231636993f2c29a68a655f57c390865b007 imadkaz <ikazbour3@gmail.com> 1788399001 +0300	Branch: renamed refs/heads/master to refs/heads/main
+768aa231636993f2c29a68a655f57c390865b007 bda2b77f81905f33336068b0d5c7382ff21750ae imadkaz <ikazbour3@gmail.com> 1788557876 +0300	commit: add a new db model user and doctor
+bda2b77f81905f33336068b0d5c7382ff21750ae bda2b77f81905f33336068b0d5c7382ff21750ae imadkaz <ikazbour3@gmail.com> 1788557985 +0300	checkout: moving from main to feature/user-module
+bda2b77f81905f33336068b0d5c7382ff21750ae a077b6a8802fed20de173be2d98b1180f5a28c66 imadkaz <ikazbour3@gmail.com> 1788828917 +0300	commit: feat(user): add User entity, repository, use cases, and REST API
+a077b6a8802fed20de173be2d98b1180f5a28c66 bda2b77f81905f33336068b0d5c7382ff21750ae imadkaz <ikazbour3@gmail.com> 1788828936 +0300	checkout: moving from feature/user-module to main
+bda2b77f81905f33336068b0d5c7382ff21750ae 3209087c2861c358152a07159041d7f25749c53b imadkaz <ikazbour3@gmail.com> 1788829411 +0300	merge feature/user-module: Merge made by the 'ort' strategy.
+3209087c2861c358152a07159041d7f25749c53b 4198709eeba4073d3d572886ebeb89c51f6fe5f0 imadkaz <ikazbour3@gmail.com> 1789068437 +0300	commit: test(user): add unit and integration tests for User module
+4198709eeba4073d3d572886ebeb89c51f6fe5f0 4198709eeba4073d3d572886ebeb89c51f6fe5f0 imadkaz <ikazbour3@gmail.com> 1789068557 +0300	checkout: moving from main to feature/doctor-module
+4198709eeba4073d3d572886ebeb89c51f6fe5f0 1732d4a62a3e4ad56c60163539efd6380e7f27e4 imadkaz <ikazbour3@gmail.com> 1789161423 +0300	commit: feat(Doctor): add Doctor entity, repository, use cases, and REST API
+1732d4a62a3e4ad56c60163539efd6380e7f27e4 4198709eeba4073d3d572886ebeb89c51f6fe5f0 imadkaz <ikazbour3@gmail.com> 1789161504 +0300	checkout: moving from feature/doctor-module to main
+4198709eeba4073d3d572886ebeb89c51f6fe5f0 1732d4a62a3e4ad56c60163539efd6380e7f27e4 imadkaz <ikazbour3@gmail.com> 1789161534 +0300	merge feature/doctor-module: Fast-forward
+1732d4a62a3e4ad56c60163539efd6380e7f27e4 1732d4a62a3e4ad56c60163539efd6380e7f27e4 imadkaz <ikazbour3@gmail.com> 1789509803 +0300	checkout: moving from main to feature/patient-module
+1732d4a62a3e4ad56c60163539efd6380e7f27e4 e76f6c9c946ed2fcb4cf4d36fce1ef9ac5224aa3 imadkaz <ikazbour3@gmail.com> 1789557137 +0300	commit: fix(clinic): return 201 status code on clinic creation
+e76f6c9c946ed2fcb4cf4d36fce1ef9ac5224aa3 d7c3fb105f5361b6d69308e7128558b27c12c293 imadkaz <ikazbour3@gmail.com> 1789557151 +0300	commit: chore: remove unused IMapper interface, minor cleanup
+d7c3fb105f5361b6d69308e7128558b27c12c293 f6f01cdd54db2210e1515b55670873b2736306e3 imadkaz <ikazbour3@gmail.com> 1789557167 +0300	commit: feat(patient): add Patient entity, repository, use cases, and validation
+f6f01cdd54db2210e1515b55670873b2736306e3 1732d4a62a3e4ad56c60163539efd6380e7f27e4 imadkaz <ikazbour3@gmail.com> 1789677488 +0300	checkout: moving from feature/patient-module to main
+1732d4a62a3e4ad56c60163539efd6380e7f27e4 1732d4a62a3e4ad56c60163539efd6380e7f27e4 imadkaz <ikazbour3@gmail.com> 1789677552 +0300	checkout: moving from main to feature/added-ci
+1732d4a62a3e4ad56c60163539efd6380e7f27e4 5382dc6fbe8616b605df46d0bb40bd7e8fd9ceb5 imadkaz <ikazbour3@gmail.com> 1789678065 +0300	commit: added feature ci
+5382dc6fbe8616b605df46d0bb40bd7e8fd9ceb5 1732d4a62a3e4ad56c60163539efd6380e7f27e4 imadkaz <ikazbour3@gmail.com> 1789678096 +0300	checkout: moving from feature/added-ci to main
+1732d4a62a3e4ad56c60163539efd6380e7f27e4 5382dc6fbe8616b605df46d0bb40bd7e8fd9ceb5 imadkaz <ikazbour3@gmail.com> 1789678256 +0300	checkout: moving from main to feature/added-ci
+5382dc6fbe8616b605df46d0bb40bd7e8fd9ceb5 1732d4a62a3e4ad56c60163539efd6380e7f27e4 imadkaz <ikazbour3@gmail.com> 1789678333 +0300	checkout: moving from feature/added-ci to main
+1732d4a62a3e4ad56c60163539efd6380e7f27e4 5382dc6fbe8616b605df46d0bb40bd7e8fd9ceb5 imadkaz <ikazbour3@gmail.com> 1789678374 +0300	merge feature/added-ci: Fast-forward
+5382dc6fbe8616b605df46d0bb40bd7e8fd9ceb5 6293ccf3024fdd35a3e6a1b754e63b41878b4bdb imadkaz <ikazbour3@gmail.com> 1789679235 +0300	commit (amend): added feature ci
+6293ccf3024fdd35a3e6a1b754e63b41878b4bdb d5f0c6869ab1f057a009356502db16744feda42e imadkaz <ikazbour3@gmail.com> 1789679305 +0300	commit: fixed the name of directory
+d5f0c6869ab1f057a009356502db16744feda42e 7e8065dfd2792d1cacde7407903aa7080dfa38e8 imadkaz <ikazbour3@gmail.com> 1789679811 +0300	commit: fix the ci file
+7e8065dfd2792d1cacde7407903aa7080dfa38e8 91138f4db41f4404e1abdb98e60f53a2959ef094 imadkaz <ikazbour3@gmail.com> 1789680494 +0300	commit: add missing files
+91138f4db41f4404e1abdb98e60f53a2959ef094 601b29bbd691d59c211bcd82e8ff4e19cc6122f8 imadkaz <ikazbour3@gmail.com> 1789680680 +0300	commit: update the tsconfig file
+601b29bbd691d59c211bcd82e8ff4e19cc6122f8 39f1659e39ed70f335aa21f34a6c4e598d2be38a imadkaz <ikazbour3@gmail.com> 1789681482 +0300	commit (amend): update the tsconfig file
+39f1659e39ed70f335aa21f34a6c4e598d2be38a e551b650736e4acd9f2c0f2e0c06bf9a0503439d imadkaz <ikazbour3@gmail.com> 1789682774 +0300	commit (amend): update the tsconfig file
+e551b650736e4acd9f2c0f2e0c06bf9a0503439d c882e830fa0fe0076aecb0b050f88e5852574030 imadkaz <ikazbour3@gmail.com> 1789683030 +0300	commit: deleting an unused files
+c882e830fa0fe0076aecb0b050f88e5852574030 2bec8abebc7d1f9bbd14cb7389b3dfa9a0b9d80e imadkaz <ikazbour3@gmail.com> 1789683572 +0300	commit (amend): deleting an unused files
+2bec8abebc7d1f9bbd14cb7389b3dfa9a0b9d80e 7dad7ced63d10087fcd3683a65ec14dda2644939 imadkaz <ikazbour3@gmail.com> 1789683952 +0300	commit (amend): deleting an unused files
+7dad7ced63d10087fcd3683a65ec14dda2644939 817bce8f3e72a08f603312c225d4503faab47619 imadkaz <ikazbour3@gmail.com> 1789684193 +0300	commit (amend): deleting an unused files
+817bce8f3e72a08f603312c225d4503faab47619 f6f01cdd54db2210e1515b55670873b2736306e3 imadkaz <ikazbour3@gmail.com> 1789759374 +0300	checkout: moving from main to feature/patient-module
+f6f01cdd54db2210e1515b55670873b2736306e3 f08f25057aca77d9a53a6fdced4d317dc66fd52d imadkaz <ikazbour3@gmail.com> 1789759507 +0300	pull origin main: Merge made by the 'ort' strategy.
+f08f25057aca77d9a53a6fdced4d317dc66fd52d 6ed33e95c14f44638eb4f5de83112e8a7b7ae22b imadkaz <ikazbour3@gmail.com> 1789764930 +0300	commit: test(patient): add unit and integration tests for Patient module
+6ed33e95c14f44638eb4f5de83112e8a7b7ae22b 817bce8f3e72a08f603312c225d4503faab47619 imadkaz <ikazbour3@gmail.com> 1789765151 +0300	checkout: moving from feature/patient-module to main
+817bce8f3e72a08f603312c225d4503faab47619 23ae64d8d9f062adc48ac5a38b82bcc4346eebf5 imadkaz <ikazbour3@gmail.com> 1789765279 +0300	merge feature/patient-module: Merge made by the 'ort' strategy.
+23ae64d8d9f062adc48ac5a38b82bcc4346eebf5 23ae64d8d9f062adc48ac5a38b82bcc4346eebf5 imadkaz <ikazbour3@gmail.com> 1790107399 +0300	checkout: moving from main to feature/appointment-model
+23ae64d8d9f062adc48ac5a38b82bcc4346eebf5 dd87c6c62791ac5311964a6208763f7f5e0f9ef9 imadkaz <ikazbour3@gmail.com> 1790524814 +0300	commit: feat(Appointment): add Appointment entity, repository, use cases, controller and validation
+dd87c6c62791ac5311964a6208763f7f5e0f9ef9 06faeb84ac1ca4fe11081aed973ae33774dd6634 imadkaz <ikazbour3@gmail.com> 1790524875 +0300	commit: feat(Appointment): add Appointment entity, repository, use cases, controller and validation
+06faeb84ac1ca4fe11081aed973ae33774dd6634 23ae64d8d9f062adc48ac5a38b82bcc4346eebf5 imadkaz <ikazbour3@gmail.com> 1790525085 +0300	checkout: moving from feature/appointment-model to main
+23ae64d8d9f062adc48ac5a38b82bcc4346eebf5 6bf5953e6d908ddb6a0db11105fd65d24d39afa7 imadkaz <ikazbour3@gmail.com> 1790525157 +0300	merge feature/appointment-model: Merge made by the 'ort' strategy.
+6bf5953e6d908ddb6a0db11105fd65d24d39afa7 6bf5953e6d908ddb6a0db11105fd65d24d39afa7 imadkaz <ikazbour3@gmail.com> 1790596241 +0300	checkout: moving from main to feature/medicalRecord-module
+6bf5953e6d908ddb6a0db11105fd65d24d39afa7 06faeb84ac1ca4fe11081aed973ae33774dd6634 imadkaz <ikazbour3@gmail.com> 1790597117 +0300	checkout: moving from feature/medicalRecord-module to feature/appointment-model
+06faeb84ac1ca4fe11081aed973ae33774dd6634 53fd52cbdff18a92045cd054bbbb46f3a1bd01cc imadkaz <ikazbour3@gmail.com> 1790599118 +0300	commit: feature(appointment): add a new funtions can the patient and the doctor know her own appointment scheduled
+53fd52cbdff18a92045cd054bbbb46f3a1bd01cc 1732d4a62a3e4ad56c60163539efd6380e7f27e4 imadkaz <ikazbour3@gmail.com> 1790599229 +0300	checkout: moving from feature/appointment-model to feature/doctor-module
+1732d4a62a3e4ad56c60163539efd6380e7f27e4 4ed2c2d01aa49babb9fa7fd3a8fbf69936dd04ef imadkaz <ikazbour3@gmail.com> 1790600429 +0300	commit: feat(doctor) add a new function make the clinic know her doctors
+4ed2c2d01aa49babb9fa7fd3a8fbf69936dd04ef 6ed33e95c14f44638eb4f5de83112e8a7b7ae22b imadkaz <ikazbour3@gmail.com> 1790600500 +0300	checkout: moving from feature/doctor-module to feature/patient-module
+6ed33e95c14f44638eb4f5de83112e8a7b7ae22b 6bf5953e6d908ddb6a0db11105fd65d24d39afa7 imadkaz <ikazbour3@gmail.com> 1790600772 +0300	merge origin/main: Fast-forward
+6bf5953e6d908ddb6a0db11105fd65d24d39afa7 b2d32d974bf472f805385905cc263d335cab3416 imadkaz <ikazbour3@gmail.com> 1790601925 +0300	commit: feature(patient) add a new functions the clinic can know his patients
+b2d32d974bf472f805385905cc263d335cab3416 6bf5953e6d908ddb6a0db11105fd65d24d39afa7 imadkaz <ikazbour3@gmail.com> 1790601973 +0300	checkout: moving from feature/patient-module to main
+6bf5953e6d908ddb6a0db11105fd65d24d39afa7 b2d32d974bf472f805385905cc263d335cab3416 imadkaz <ikazbour3@gmail.com> 1790602286 +0300	merge origin/feature/patient-module: Fast-forward
+b2d32d974bf472f805385905cc263d335cab3416 d734a1f479a8513f6b954bc44410f524c0a49ca1 imadkaz <ikazbour3@gmail.com> 1790602534 +0300	commit (merge): merging conflict
+d734a1f479a8513f6b954bc44410f524c0a49ca1 76979b3cf29d84818a14ed87ab8ca7a64acb40b0 imadkaz <ikazbour3@gmail.com> 1790602646 +0300	commit (merge): Merge remote-tracking branch 'origin/feature/appointment-model'
+76979b3cf29d84818a14ed87ab8ca7a64acb40b0 53fd52cbdff18a92045cd054bbbb46f3a1bd01cc imadkaz <ikazbour3@gmail.com> 1790602728 +0300	checkout: moving from main to feature/appointment-model
+53fd52cbdff18a92045cd054bbbb46f3a1bd01cc 76979b3cf29d84818a14ed87ab8ca7a64acb40b0 imadkaz <ikazbour3@gmail.com> 1790602781 +0300	checkout: moving from feature/appointment-model to main
+76979b3cf29d84818a14ed87ab8ca7a64acb40b0 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790602891 +0300	commit: update feature
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 53fd52cbdff18a92045cd054bbbb46f3a1bd01cc imadkaz <ikazbour3@gmail.com> 1790602955 +0300	checkout: moving from main to feature/appointment-model
+53fd52cbdff18a92045cd054bbbb46f3a1bd01cc 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790602976 +0300	merge origin/main: Fast-forward
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 4ed2c2d01aa49babb9fa7fd3a8fbf69936dd04ef imadkaz <ikazbour3@gmail.com> 1790603024 +0300	checkout: moving from feature/appointment-model to feature/doctor-module
+4ed2c2d01aa49babb9fa7fd3a8fbf69936dd04ef 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790603055 +0300	merge origin/main: Fast-forward
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 b2d32d974bf472f805385905cc263d335cab3416 imadkaz <ikazbour3@gmail.com> 1790603087 +0300	checkout: moving from feature/doctor-module to feature/patient-module
+b2d32d974bf472f805385905cc263d335cab3416 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790603104 +0300	merge origin: Fast-forward
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 a077b6a8802fed20de173be2d98b1180f5a28c66 imadkaz <ikazbour3@gmail.com> 1790603127 +0300	checkout: moving from feature/patient-module to feature/user-module
+a077b6a8802fed20de173be2d98b1180f5a28c66 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790603159 +0300	merge origin/main: Fast-forward
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 6bf5953e6d908ddb6a0db11105fd65d24d39afa7 imadkaz <ikazbour3@gmail.com> 1790603191 +0300	checkout: moving from feature/user-module to feature/medicalRecord-module
+6bf5953e6d908ddb6a0db11105fd65d24d39afa7 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790603225 +0300	merge origin/main: Fast-forward
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790603262 +0300	checkout: moving from feature/medicalRecord-module to main
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 f1d6fa3591cb4320b823201638f9e06b4690dd27 imadkaz <ikazbour3@gmail.com> 1790604959 +0300	commit: fix the schema
+f1d6fa3591cb4320b823201638f9e06b4690dd27 8e6976b582b83cc0c9227f7e35558b2937f66875 imadkaz <ikazbour3@gmail.com> 1790605325 +0300	commit (amend): fix the schema
+8e6976b582b83cc0c9227f7e35558b2937f66875 0d077ec2ce6a403748c71a18ac54f534f0010513 imadkaz <ikazbour3@gmail.com> 1790606031 +0300	commit (amend): fix the schema
+0d077ec2ce6a403748c71a18ac54f534f0010513 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790608512 +0300	checkout: moving from main to feature/appointment-model
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 76979b3cf29d84818a14ed87ab8ca7a64acb40b0 imadkaz <ikazbour3@gmail.com> 1790609432 +0300	checkout: moving from feature/appointment-model to 76979b3
+76979b3cf29d84818a14ed87ab8ca7a64acb40b0 0d077ec2ce6a403748c71a18ac54f534f0010513 imadkaz <ikazbour3@gmail.com> 1790609522 +0300	checkout: moving from 76979b3cf29d84818a14ed87ab8ca7a64acb40b0 to main
+0d077ec2ce6a403748c71a18ac54f534f0010513 06faeb84ac1ca4fe11081aed973ae33774dd6634 imadkaz <ikazbour3@gmail.com> 1790609633 +0300	checkout: moving from main to 06faeb8
+06faeb84ac1ca4fe11081aed973ae33774dd6634 0d077ec2ce6a403748c71a18ac54f534f0010513 imadkaz <ikazbour3@gmail.com> 1790609656 +0300	checkout: moving from 06faeb84ac1ca4fe11081aed973ae33774dd6634 to main
+0d077ec2ce6a403748c71a18ac54f534f0010513 dd87c6c62791ac5311964a6208763f7f5e0f9ef9 imadkaz <ikazbour3@gmail.com> 1790609689 +0300	checkout: moving from main to dd87c6c
+dd87c6c62791ac5311964a6208763f7f5e0f9ef9 0d077ec2ce6a403748c71a18ac54f534f0010513 imadkaz <ikazbour3@gmail.com> 1790609760 +0300	checkout: moving from dd87c6c62791ac5311964a6208763f7f5e0f9ef9 to main
+0d077ec2ce6a403748c71a18ac54f534f0010513 6ed33e95c14f44638eb4f5de83112e8a7b7ae22b imadkaz <ikazbour3@gmail.com> 1790609767 +0300	checkout: moving from main to 6ed33e9
+6ed33e95c14f44638eb4f5de83112e8a7b7ae22b 0d077ec2ce6a403748c71a18ac54f534f0010513 imadkaz <ikazbour3@gmail.com> 1790609798 +0300	checkout: moving from 6ed33e95c14f44638eb4f5de83112e8a7b7ae22b to main
+0d077ec2ce6a403748c71a18ac54f534f0010513 0d077ec2ce6a403748c71a18ac54f534f0010513 imadkaz <ikazbour3@gmail.com> 1790610112 +0300	checkout: moving from main to Fix
+0d077ec2ce6a403748c71a18ac54f534f0010513 3eebb6126fc172ea9503fb0c6fcce032b1f3d57c imadkaz <ikazbour3@gmail.com> 1790612091 +0300	commit: fix: align Prisma generated imports with TypeScript
+3eebb6126fc172ea9503fb0c6fcce032b1f3d57c 0d077ec2ce6a403748c71a18ac54f534f0010513 imadkaz <ikazbour3@gmail.com> 1790612115 +0300	checkout: moving from Fix to main
+0d077ec2ce6a403748c71a18ac54f534f0010513 3eebb6126fc172ea9503fb0c6fcce032b1f3d57c imadkaz <ikazbour3@gmail.com> 1790612212 +0300	merge Fix: Fast-forward
+3eebb6126fc172ea9503fb0c6fcce032b1f3d57c 419ee597a975bc2d9300243a354f2d5368ab01fd imadkaz <ikazbour3@gmail.com> 1790669479 +0300	commit: add a validation error
+419ee597a975bc2d9300243a354f2d5368ab01fd 0cc0b4d34773bd2aa2cf67b65168358d3434ed7f imadkaz <ikazbour3@gmail.com> 1790669546 +0300	commit (amend): add a validation error
+0cc0b4d34773bd2aa2cf67b65168358d3434ed7f 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790669597 +0300	checkout: moving from main to feature/medicalRecord-module
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 0cc0b4d34773bd2aa2cf67b65168358d3434ed7f imadkaz <ikazbour3@gmail.com> 1790669637 +0300	pull origin main: Fast-forward
+0cc0b4d34773bd2aa2cf67b65168358d3434ed7f 14bf7a027a192d639b01fbed75653c0207240317 imadkaz <ikazbour3@gmail.com> 1790724446 +0300	commit: feature(medicalRecord): add the model, repository, usecases, controllers
+14bf7a027a192d639b01fbed75653c0207240317 0cc0b4d34773bd2aa2cf67b65168358d3434ed7f imadkaz <ikazbour3@gmail.com> 1790724475 +0300	checkout: moving from feature/medicalRecord-module to main
+0cc0b4d34773bd2aa2cf67b65168358d3434ed7f 14bf7a027a192d639b01fbed75653c0207240317 imadkaz <ikazbour3@gmail.com> 1790724607 +0300	merge feature/medicalRecord-module: Fast-forward (no commit created; -m option ignored)
+14bf7a027a192d639b01fbed75653c0207240317 14bf7a027a192d639b01fbed75653c0207240317 imadkaz <ikazbour3@gmail.com> 1790753553 +0300	checkout: moving from main to feature/medicalRecord-module
+14bf7a027a192d639b01fbed75653c0207240317 c73445b2e9ac0ba888867631638bd6b166db6526 imadkaz <ikazbour3@gmail.com> 1790762324 +0300	commit: fixing problem in this feature, medical feature
+c73445b2e9ac0ba888867631638bd6b166db6526 14bf7a027a192d639b01fbed75653c0207240317 imadkaz <ikazbour3@gmail.com> 1790762354 +0300	checkout: moving from feature/medicalRecord-module to main
+14bf7a027a192d639b01fbed75653c0207240317 c73445b2e9ac0ba888867631638bd6b166db6526 imadkaz <ikazbour3@gmail.com> 1790762700 +0300	merge feature/medicalRecord-module: Fast-forward
+c73445b2e9ac0ba888867631638bd6b166db6526 db1e1af9f3360d33a2312653ed7e1937b6612efd imadkaz <ikazbour3@gmail.com> 1790764947 +0300	commit: fixing the testing file of medical
+db1e1af9f3360d33a2312653ed7e1937b6612efd 6cd726e0780be790960a4d843acb6e34b1e12d78 imadkaz <ikazbour3@gmail.com> 1790765075 +0300	commit: delete the medical test file
+6cd726e0780be790960a4d843acb6e34b1e12d78 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790976457 +0300	checkout: moving from main to feature/appointment-model
+524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 6cd726e0780be790960a4d843acb6e34b1e12d78 imadkaz <ikazbour3@gmail.com> 1790976728 +0300	pull origin main: Fast-forward
+6cd726e0780be790960a4d843acb6e34b1e12d78 96ecda57e57560f174b0ca3595b2495a3d3b8a42 imadkaz <ikazbour3@gmail.com> 1791060567 +0300	commit: feature(appointment): add an appointment unique slot
+96ecda57e57560f174b0ca3595b2495a3d3b8a42 6cd726e0780be790960a4d843acb6e34b1e12d78 imadkaz <ikazbour3@gmail.com> 1791060607 +0300	checkout: moving from feature/appointment-model to main
+6cd726e0780be790960a4d843acb6e34b1e12d78 96ecda57e57560f174b0ca3595b2495a3d3b8a42 imadkaz <ikazbour3@gmail.com> 1791060766 +0300	merge feature/appointment-model: Fast-forward
+96ecda57e57560f174b0ca3595b2495a3d3b8a42 96ecda57e57560f174b0ca3595b2495a3d3b8a42 imadkaz <ikazbour3@gmail.com> 1791060801 +0300	checkout: moving from main to feature/tooth-record
+96ecda57e57560f174b0ca3595b2495a3d3b8a42 1885c9905d3e653b6d8fa99e11d2d6cc99db705f imadkaz <ikazbour3@gmail.com> 1791103407 +0300	commit: feature(tooth-record): adding tooth record for patient
+1885c9905d3e653b6d8fa99e11d2d6cc99db705f 96ecda57e57560f174b0ca3595b2495a3d3b8a42 imadkaz <ikazbour3@gmail.com> 1791103516 +0300	checkout: moving from feature/tooth-record to main
+96ecda57e57560f174b0ca3595b2495a3d3b8a42 1885c9905d3e653b6d8fa99e11d2d6cc99db705f imadkaz <ikazbour3@gmail.com> 1791103667 +0300	merge feature/tooth-record: Fast-forward
+1885c9905d3e653b6d8fa99e11d2d6cc99db705f 806a048dc5bcf2dbb496cea4155545ef5637bfa8 imadkaz <ikazbour3@gmail.com> 1791103985 +0300	commit: fix error linting from eslint

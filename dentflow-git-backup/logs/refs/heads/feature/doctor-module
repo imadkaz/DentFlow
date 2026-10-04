@@ -1,0 +1,4 @@
+0000000000000000000000000000000000000000 4198709eeba4073d3d572886ebeb89c51f6fe5f0 imadkaz <ikazbour3@gmail.com> 1789068557 +0300	branch: Created from HEAD
+4198709eeba4073d3d572886ebeb89c51f6fe5f0 1732d4a62a3e4ad56c60163539efd6380e7f27e4 imadkaz <ikazbour3@gmail.com> 1789161423 +0300	commit: feat(Doctor): add Doctor entity, repository, use cases, and REST API
+1732d4a62a3e4ad56c60163539efd6380e7f27e4 4ed2c2d01aa49babb9fa7fd3a8fbf69936dd04ef imadkaz <ikazbour3@gmail.com> 1790600429 +0300	commit: feat(doctor) add a new function make the clinic know her doctors
+4ed2c2d01aa49babb9fa7fd3a8fbf69936dd04ef 524d85950cf0fb6a39e97a00d3e40b5c2889dfc1 imadkaz <ikazbour3@gmail.com> 1790603055 +0300	merge origin/main: Fast-forward
