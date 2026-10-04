@@ -58,6 +58,11 @@ import { DeleteMedicalUsecase } from '../usecases/MedicalRecord/DeleteMedicalUse
 import { GetMedicalUsecase } from '../usecases/MedicalRecord/getMedicalUsecase';
 import { GetPatientMedicalUsecase } from '../usecases/MedicalRecord/GetPatientMedicalUsecase';
 import { MedicalRoutes } from './Medical.Routes';
+import { ToothRecordRepository } from '../repository/ToothRecordReposritory';
+import { ToothRecordController } from '../Controllers/ToothRecordController';
+import { UpsetToothRecordUsecase } from '../usecases/ToothRecord/UpsetToothRecordUsecase';
+import { GetPatientTeethUsecase } from '../usecases/ToothRecord/GetPatientTeethUsecase';
+import { ToothRecordRoutes } from './ToothRecord.Routes';
 
 
 
@@ -124,10 +129,17 @@ const medicalRecordController = new MedicalController(
     new GetPatientMedicalUsecase(medicalRecordRepository)
 )
 
+const toothRecordRepository = new ToothRecordRepository(prisma);
+const toothRecordController = new ToothRecordController(
+    new UpsetToothRecordUsecase(toothRecordRepository, patientRepository),
+    new GetPatientTeethUsecase(toothRecordRepository, patientRepository)
+)
+
 routes.use('/clinics', ClinicRoutes(clinicController));
 routes.use('/users', UserRoutes(userController));
 routes.use('/doctors', DoctorRoutes(doctorController));
 routes.use('/patients', PatientRoutes(patientController));
+routes.use('/patients', ToothRecordRoutes(toothRecordController))
 routes.use('/appointments', AppointmentRoutes(appointmentController));
 routes.use('/medical-record', MedicalRoutes(medicalRecordController))
 

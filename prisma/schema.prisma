@@ -76,6 +76,7 @@ model Patient {
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   MedicalRecord MedicalRecord?
+  toothRecords  ToothRecord[]
   appointments Appointment[]
 }
 
@@ -116,4 +117,36 @@ model MedicalRecord {
   bloodType   String?   @db.VarChar(5)
   notes       String?
   updatedAt   DateTime  @updatedAt
+}
+
+enum Surface {
+  mesial
+  distal
+  buccal
+  lingual
+  occlusal
+  incisal
+}
+
+enum ToothStatus {
+  healthy
+  treatment_needed
+  in_treatment
+  completed
+  missing
+  extracted
+}
+
+model ToothRecord {
+  id          String      @id @default(uuid())
+  patientId   String
+  patient     Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  toothNumber Int         @db.SmallInt
+  surfaces    Surface[]
+  status      ToothStatus @default(healthy)
+  notes       String?
+  recordedAt  DateTime    @default(now())
+
+  @@unique([patientId, toothNumber])
+  @@map("tooth_records")
 }

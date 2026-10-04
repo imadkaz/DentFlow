@@ -24,3 +24,5 @@ src/generated/
 Thumbs.db
 logs
 data
+build/
+coverage/

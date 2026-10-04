@@ -9,6 +9,12 @@ import { Patient } from '../../models/Patient.model';
 import { Doctor } from '../../models/Doctor.model';
 
 class FakeAppointmentRepository implements IAppointmentRepository {
+    async findByDoctorAndDate(doctorId: string, apptDate: Date): Promise<Appointment[]> {
+        return [...this.items.values()].filter(appointment =>
+            appointment.getDoctorId() === doctorId &&
+            appointment.getApptDate().toDateString() === apptDate.toDateString()
+        );
+    }
     private items = new Map<string, Appointment>();
     async findByPatientId(patientId: string): Promise<Appointment[]> {
         return [...this.items.values()].filter(appointment => appointment.getPatientId() === patientId);

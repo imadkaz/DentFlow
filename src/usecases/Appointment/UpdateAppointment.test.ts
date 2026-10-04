@@ -5,6 +5,15 @@ import { Appointment } from '../../models/Appointment.model';
 import { IAppointmentRepository } from '../../repository/interfaces/IAppointmentRepository';
 
 class FakeAppointmentRepository implements IAppointmentRepository {
+    findByDoctorAndDate(doctorId: string, apptDate: Date): Promise<Appointment[]> {
+        const requestedDate = apptDate.toDateString();
+        return Promise.resolve(
+            Array.from(this.items.values()).filter(appointment =>
+                appointment.getDoctorId() === doctorId &&
+                appointment.getApptDate().toDateString() === requestedDate,
+            ),
+        );
+    }
     async findByPatientId(patientId: string): Promise<Appointment[]> {
         return Array.from(this.items.values()).filter(appointment => appointment.getPatientId() === patientId);
     }
