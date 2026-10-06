@@ -1,4 +1,3 @@
-// src/usecases/ToothRecord/UpsertToothRecordUsecase.test.ts
 import { describe, it, expect, beforeEach } from 'vitest';
 import { UpsetToothRecordUsecase } from './UpsetToothRecordUsecase';
 import { ToothRecord, ToothStatus } from '../../models/ToothRecord.model';

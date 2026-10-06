@@ -63,6 +63,14 @@ import { ToothRecordController } from '../Controllers/ToothRecordController';
 import { UpsetToothRecordUsecase } from '../usecases/ToothRecord/UpsetToothRecordUsecase';
 import { GetPatientTeethUsecase } from '../usecases/ToothRecord/GetPatientTeethUsecase';
 import { ToothRecordRoutes } from './ToothRecord.Routes';
+import { TreatmentPlanRepository } from '../repository/TreatmentPlanRepository';
+import { TreatmentPlanController } from '../Controllers/TreatmentPlanController';
+import { CreateTreatmentPlanUsecase } from '../usecases/TreatmentPlan/CreateTreatmentPlanUsecase';
+import { UpdateTreatmentPlanUsecase } from '../usecases/TreatmentPlan/UpdateTreatmentPlanUsecase';
+import { GetTreatmentPlanUsecase } from '../usecases/TreatmentPlan/GetTreatmentPlanUsecase';
+import { DeleteTreatmentPlanUsecase } from '../usecases/TreatmentPlan/DeleteTreatmentPlanUsecase';
+import { TreatmentPlanRoutes } from './TreatmentPlan.Routes';
+import { GetPatientTreatmentsUsecase } from '../usecases/TreatmentPlan/GetPatientTreatmentUsecase';
 
 
 
@@ -129,10 +137,25 @@ const medicalRecordController = new MedicalController(
     new GetPatientMedicalUsecase(medicalRecordRepository)
 )
 
+// ---- Tooth Record ----
 const toothRecordRepository = new ToothRecordRepository(prisma);
 const toothRecordController = new ToothRecordController(
     new UpsetToothRecordUsecase(toothRecordRepository, patientRepository),
     new GetPatientTeethUsecase(toothRecordRepository, patientRepository)
+)
+
+// ---- Treatment Plan ----
+const treatmentPlanRepository = new TreatmentPlanRepository(prisma);
+const treatmentPlanController = new TreatmentPlanController(
+    new CreateTreatmentPlanUsecase(
+        treatmentPlanRepository,
+        patientRepository,
+        doctorRepository
+    ),
+    new UpdateTreatmentPlanUsecase(treatmentPlanRepository),
+    new GetTreatmentPlanUsecase(treatmentPlanRepository),
+    new DeleteTreatmentPlanUsecase(treatmentPlanRepository),
+    new GetPatientTreatmentsUsecase(treatmentPlanRepository, patientRepository)
 )
 
 routes.use('/clinics', ClinicRoutes(clinicController));
@@ -141,6 +164,7 @@ routes.use('/doctors', DoctorRoutes(doctorController));
 routes.use('/patients', PatientRoutes(patientController));
 routes.use('/patients', ToothRecordRoutes(toothRecordController))
 routes.use('/appointments', AppointmentRoutes(appointmentController));
-routes.use('/medical-record', MedicalRoutes(medicalRecordController))
+routes.use('/medical-records', MedicalRoutes(medicalRecordController))
+routes.use('/treatment-plans', TreatmentPlanRoutes(treatmentPlanController))
 
 export default routes;
