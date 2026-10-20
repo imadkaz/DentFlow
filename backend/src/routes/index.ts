@@ -77,17 +77,20 @@ import { GetTreatmentPlanUsecase } from '../usecases/TreatmentPlan/GetTreatmentP
 import { DeleteTreatmentPlanUsecase } from '../usecases/TreatmentPlan/DeleteTreatmentPlanUsecase';
 import { TreatmentPlanRoutes } from './TreatmentPlan.Routes';
 import { GetPatientTreatmentsUsecase } from '../usecases/TreatmentPlan/GetPatientTreatmentUsecase';
+
+
+// Treatment Stages
 import { TreatmentStageRepository } from '../repository/TreatmentStageRepository';
 import { TreatmentStageController } from '../Controllers/TreatmentStageController';
 import { CreateTreatmentStageUsecase } from '../usecases/TreatmentStage/CreateTreatmentStageUsecase';
 import { UpdateTreatmentStageUsecase } from '../usecases/TreatmentStage/UpdateTreatmentStageUsecase';
 import { CompleteTreatmentStageUsecase } from '../usecases/TreatmentStage/CompleteTreatmentStageUsecase';
 import { GetTreatmentStageUsecase } from '../usecases/TreatmentStage/GetTreatmentStageUsecase';
+import { GetPlanStagesUsecase } from '../usecases/TreatmentStage/GetPlansStagesUsecase';
 import { DeleteTreatmentStageUsecase } from '../usecases/TreatmentStage/DeleteTreatmentStageUsecase';
 import { TreatmentStageRoutes } from './TreatmentStage.Routes';
-import { GetPlanStagesUsecase } from '../usecases/TreatmentStage/GetPlansStagesUsecase';
 
-// Treatment Stages
+
 
 
 
