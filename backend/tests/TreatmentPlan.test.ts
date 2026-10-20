@@ -12,7 +12,7 @@ import { GetPatientTreatmentsUsecase } from '../src/usecases/TreatmentPlan/GetPa
 import { GetTreatmentPlanUsecase } from '../src/usecases/TreatmentPlan/GetTreatmentPlanUsecase';
 import { UpdateTreatmentPlanUsecase } from '../src/usecases/TreatmentPlan/UpdateTreatmentPlanUsecase';
 
-class FakeTreatmentPlanRepository implements ITreatmentPlanRepository {
+export class FakeTreatmentPlanRepository implements ITreatmentPlanRepository {
     readonly items = new Map<string, TreatmentPlan>();
 
     async findById(id: string) { return this.items.get(id) ?? null; }

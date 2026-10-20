@@ -9,7 +9,7 @@ export interface DocotorProps{
     specialty?: string | null,
     phone?: string | null,
     email?: string | null,
-    createdAt: Date
+    createdAt?: Date
 }
 
 export class Doctor {

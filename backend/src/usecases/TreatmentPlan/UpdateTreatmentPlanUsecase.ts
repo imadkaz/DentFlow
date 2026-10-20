@@ -1,5 +1,5 @@
 import { TreatmentPlan, PlanStatus } from "../../models/TreatmentPlan.model";
-import { TreatmentPlanRepository } from "../../repository/TreatmentPlanRepository";
+import { ITreatmentPlanRepository } from "../../repository/interfaces/ITreatmentPlanRepository";
 import { ConflictError } from "../../util/exceptions/http/ConflictError";
 import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
 
@@ -15,7 +15,7 @@ export interface UpdateTreatmentPlanProps {
 
 export class UpdateTreatmentPlanUsecase {
 	constructor(
-		private readonly treatmentPlanRepository: TreatmentPlanRepository
+		private readonly treatmentPlanRepository: ITreatmentPlanRepository
 	) { }
 
 	async execute(input: UpdateTreatmentPlanProps): Promise<TreatmentPlan> {
@@ -40,6 +40,7 @@ export class UpdateTreatmentPlanUsecase {
             status: input.status !== undefined ? input.status : existingTreatmentPlan.getStatus(),
             totalCost: input.totalCost !== undefined ? input.totalCost : existingTreatmentPlan.getTotalCost(),
             paidAmount: existingTreatmentPlan.getPaidAmount(),
+            nextApptAt: input.nextApptAt !== undefined ? input.nextApptAt : existingTreatmentPlan.getNextAppAt(),
             createdAt: existingTreatmentPlan.getCreatedAt(),
             updatedAt: new Date(),
         });

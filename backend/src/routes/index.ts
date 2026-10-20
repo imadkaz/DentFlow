@@ -50,6 +50,8 @@ import { GetClinicPatientUsecase } from '../usecases/Patient/GetClinicpatientUse
 import { GetClinicDoctorUsecase } from '../usecases/doctor/GetClinicDoctorUsecase';
 import { GetPatientAppointmentsUsecase } from '../usecases/Appointment/GetPatientAppointmentUsecase';
 import { GetDoctorAppointmentsUsecase } from '../usecases/Appointment/GetDoctorAppointmentUsecase';
+
+// Medical record
 import { MedicalRecordRepository } from '../repository/MedicalRecordRepository';
 import { MedicalController } from '../Controllers/MedicalController';
 import { CreateMedialUsecase } from '../usecases/MedicalRecord/CreateMedicalUsecase';
@@ -58,11 +60,15 @@ import { DeleteMedicalUsecase } from '../usecases/MedicalRecord/DeleteMedicalUse
 import { GetMedicalUsecase } from '../usecases/MedicalRecord/getMedicalUsecase';
 import { GetPatientMedicalUsecase } from '../usecases/MedicalRecord/GetPatientMedicalUsecase';
 import { MedicalRoutes } from './Medical.Routes';
+
+// Tooth record
 import { ToothRecordRepository } from '../repository/ToothRecordReposritory';
 import { ToothRecordController } from '../Controllers/ToothRecordController';
 import { UpsetToothRecordUsecase } from '../usecases/ToothRecord/UpsetToothRecordUsecase';
 import { GetPatientTeethUsecase } from '../usecases/ToothRecord/GetPatientTeethUsecase';
 import { ToothRecordRoutes } from './ToothRecord.Routes';
+
+// Treatment Plan
 import { TreatmentPlanRepository } from '../repository/TreatmentPlanRepository';
 import { TreatmentPlanController } from '../Controllers/TreatmentPlanController';
 import { CreateTreatmentPlanUsecase } from '../usecases/TreatmentPlan/CreateTreatmentPlanUsecase';
@@ -71,6 +77,17 @@ import { GetTreatmentPlanUsecase } from '../usecases/TreatmentPlan/GetTreatmentP
 import { DeleteTreatmentPlanUsecase } from '../usecases/TreatmentPlan/DeleteTreatmentPlanUsecase';
 import { TreatmentPlanRoutes } from './TreatmentPlan.Routes';
 import { GetPatientTreatmentsUsecase } from '../usecases/TreatmentPlan/GetPatientTreatmentUsecase';
+import { TreatmentStageRepository } from '../repository/TreatmentStageRepository';
+import { TreatmentStageController } from '../Controllers/TreatmentStageController';
+import { CreateTreatmentStageUsecase } from '../usecases/TreatmentStage/CreateTreatmentStageUsecase';
+import { UpdateTreatmentStageUsecase } from '../usecases/TreatmentStage/UpdateTreatmentStageUsecase';
+import { CompleteTreatmentStageUsecase } from '../usecases/TreatmentStage/CompleteTreatmentStageUsecase';
+import { GetTreatmentStageUsecase } from '../usecases/TreatmentStage/GetTreatmentStageUsecase';
+import { DeleteTreatmentStageUsecase } from '../usecases/TreatmentStage/DeleteTreatmentStageUsecase';
+import { TreatmentStageRoutes } from './TreatmentStage.Routes';
+import { GetPlanStagesUsecase } from '../usecases/TreatmentStage/GetPlansStagesUsecase';
+
+// Treatment Stages
 
 
 
@@ -158,13 +175,31 @@ const treatmentPlanController = new TreatmentPlanController(
     new GetPatientTreatmentsUsecase(treatmentPlanRepository, patientRepository)
 )
 
+// ---- Treatment Stages ----
+const treatmentStageRepository = new TreatmentStageRepository(prisma)
+const treatmentStageController = new TreatmentStageController(
+    new CreateTreatmentStageUsecase(
+        treatmentStageRepository,
+        treatmentPlanRepository
+    ),
+    new UpdateTreatmentStageUsecase(treatmentStageRepository),
+    new CompleteTreatmentStageUsecase(treatmentStageRepository),
+    new GetTreatmentStageUsecase(treatmentStageRepository),
+    new GetPlanStagesUsecase(treatmentStageRepository, treatmentPlanRepository),
+    new DeleteTreatmentStageUsecase(treatmentStageRepository)
+)
+
+
+
+
 routes.use('/clinics', ClinicRoutes(clinicController));
 routes.use('/users', UserRoutes(userController));
 routes.use('/doctors', DoctorRoutes(doctorController));
 routes.use('/patients', PatientRoutes(patientController));
 routes.use('/patients', ToothRecordRoutes(toothRecordController))
 routes.use('/appointments', AppointmentRoutes(appointmentController));
-routes.use('/medical-records', MedicalRoutes(medicalRecordController))
-routes.use('/treatment-plans', TreatmentPlanRoutes(treatmentPlanController))
+routes.use('/medical-records', MedicalRoutes(medicalRecordController));
+routes.use('/treatment-plans', TreatmentPlanRoutes(treatmentPlanController));
+routes.use('/treatment-stages', TreatmentStageRoutes(treatmentStageController));
 
 export default routes;
