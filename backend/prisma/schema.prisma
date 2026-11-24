@@ -1,6 +1,6 @@
 generator client {
   provider             = "prisma-client"
-  previewFeatures = ["partialIndexes"]
+  previewFeatures      = ["partialIndexes"]
   output               = "../src/generated/prisma"
   moduleFormat         = "cjs"
   importFileExtension  = "ts"
@@ -29,10 +29,12 @@ model Clinic {
   logoUrl   String?
   phone     String?  @db.VarChar(30)
   email     String?  @unique @db.VarChar(120)
+  currency  String   @default("USD") @db.VarChar(3) // FIX: VarChar (case) + non-null
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  doctors Doctor[]
-  patients Patient[]
+  doctors   Doctor[]
+  patients  Patient[]
+  invoices  Invoice[]                                // FIX: back-relation
 
   @@map("clinics")
 }
@@ -56,14 +58,14 @@ model Doctor {
 }
 
 enum PatientStatus {
-  active 
+  active
   inactive
   new
 }
 
 model Patient {
   id  String  @id @default(uuid())
-  clinicId  String  
+  clinicId  String
   clinic    Clinic    @relation(fields: [clinicId], references: [id])
   name      String    @db.VarChar(120)
   initials  String    @db.VarChar(3)
@@ -81,6 +83,7 @@ model Patient {
   toothRecords  ToothRecord[]
   appointments Appointment[]
   treatmentPlan TreatmentPlan[]
+  invoices      Invoice[]                            // FIX: back-relation
 }
 
 enum AppointmentStatus {
@@ -108,7 +111,6 @@ model Appointment {
 
   @@unique([doctorId, apptDate, apptTime])
 }
-
 
 model MedicalRecord {
   id          String    @id @default(uuid())
@@ -177,6 +179,7 @@ model TreatmentPlan {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   stages        TreatmentStage[]
+  invoices      Invoice[]                            // FIX: back-relation
 
   @@unique([patientId], where: raw("status = 'active'"))
 }
@@ -190,5 +193,55 @@ model TreatmentStage {
   completed   Boolean       @default(false)
   completedAt DateTime?     @db.Date
   notes       String?
+
   @@unique([planId, sequence])
+}
+
+enum InvoiceStatus {
+  unpaid
+  partial
+  paid
+  overdue
+  void
+}
+
+model Invoice {
+  id        String        @id @default(uuid())
+  clinicId  String
+  clinic    Clinic        @relation(fields: [clinicId], references: [id])   // FIX: FK
+  planId    String
+  plan      TreatmentPlan @relation(fields: [planId], references: [id])
+  patientId String
+  patient   Patient       @relation(fields: [patientId], references: [id])
+  amount    Decimal       @db.Decimal(10, 2)
+  dueDate   DateTime      @db.Date
+  status    InvoiceStatus @default(unpaid)
+  issuedAt  DateTime      @default(now())
+  payments  Payment[]
+
+  @@index([clinicId, status])                                              // FIX: indexes
+  @@index([patientId])
+  @@index([planId])
+  @@map("invoices")
+}
+
+enum PayMethod {
+  cash
+  card
+  insurance
+  bank_transfer
+  other
+}
+
+model Payment {
+  id        String    @id @default(uuid())
+  invoiceId String
+  invoice   Invoice   @relation(fields: [invoiceId], references: [id])
+  amount    Decimal   @db.Decimal(10, 2)
+  method    PayMethod @default(cash)
+  reference String?   @db.VarChar(80)
+  paidAt    DateTime  @default(now())
+
+  @@index([invoiceId])                                                     // FIX: index
+  @@map("payments")
 }

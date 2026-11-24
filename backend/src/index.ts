@@ -17,7 +17,7 @@ const app = express();
 app.use(helmet());
 app.use(cors({
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
@@ -71,5 +71,5 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.listen(config.port, config.host, () => {
-    logger.info('Server is running on port %d');
+    logger.info('Server is running on port %d', config.port);
 });

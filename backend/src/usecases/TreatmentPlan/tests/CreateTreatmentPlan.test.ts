@@ -1,4 +1,3 @@
-// src/usecases/TreatmentPlan/CreateTreatmentPlanUsecase.test.ts
 import { describe, it, expect, beforeEach } from 'vitest';
 import { CreateTreatmentPlanUsecase } from '../CreateTreatmentPlanUsecase';
 import { PlanStatus } from '../../../models/TreatmentPlan.model';
