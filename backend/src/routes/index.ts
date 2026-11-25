@@ -90,8 +90,19 @@ import { GetPlanStagesUsecase } from '../usecases/TreatmentStage/GetPlansStagesU
 import { DeleteTreatmentStageUsecase } from '../usecases/TreatmentStage/DeleteTreatmentStageUsecase';
 import { TreatmentStageRoutes } from './TreatmentStage.Routes';
 
-
-
+// Invoice & Payment
+import { InvoiceRepository } from '../repository/InvoiceRepository';
+import { PaymentRepository } from '../repository/PaymentRepository';
+import { InvoiceController } from '../Controllers/InvoiceControllers';
+import { PaymentController } from '../Controllers/PaymentController';
+import { CreateInvoiceUsecase } from '../usecases/Invoice/CreateInvoiceUsecase';
+import { GetInvoiceUsecase } from '../usecases/Invoice/GetInvoiceUsecase';
+import { GetPatientInvoicesUsecase } from '../usecases/Invoice/GetPatientInvoicesUsecase';
+import { UpdateInvoiceUsecase } from '../usecases/Invoice/UpdateInvoiceUsecase';
+import { VoidInvoiceUsecase } from '../usecases/Invoice/VoidInvoiceUsecase';
+import { RecordPaymentUsecase } from '../usecases/Payment/RecordPaymentUsecase';
+import { GetInvoicePaymentsUsecase } from '../usecases/Payment/GetInvoicePaymentsUsecase';
+import { InvoiceRoutes } from './Invoice.Routes';
 
 
 const routes = Router();
@@ -195,6 +206,22 @@ const treatmentStageController = new TreatmentStageController(
 
 
 
+// ---- Invoice & Payment ----
+const invoiceRepository = new InvoiceRepository(prisma);
+const paymentRepository = new PaymentRepository(prisma);
+const invoiceController = new InvoiceController(
+    new GetInvoiceUsecase(invoiceRepository),
+    new CreateInvoiceUsecase(invoiceRepository, patientRepository, treatmentPlanRepository),
+    new UpdateInvoiceUsecase(invoiceRepository),
+    new VoidInvoiceUsecase(invoiceRepository),
+    new GetPatientInvoicesUsecase(invoiceRepository, patientRepository)
+)
+const paymentController = new PaymentController(
+    new RecordPaymentUsecase(paymentRepository, invoiceRepository),
+    new GetInvoicePaymentsUsecase(paymentRepository, invoiceRepository)
+)
+
+
 routes.use('/clinics', ClinicRoutes(clinicController));
 routes.use('/users', UserRoutes(userController));
 routes.use('/doctors', DoctorRoutes(doctorController));
@@ -204,5 +231,6 @@ routes.use('/appointments', AppointmentRoutes(appointmentController));
 routes.use('/medical-records', MedicalRoutes(medicalRecordController));
 routes.use('/treatment-plans', TreatmentPlanRoutes(treatmentPlanController));
 routes.use('/treatment-stages', TreatmentStageRoutes(treatmentStageController));
+routes.use('/invoices', InvoiceRoutes(invoiceController, paymentController));
 
 export default routes;

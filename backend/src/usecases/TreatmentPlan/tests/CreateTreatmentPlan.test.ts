@@ -32,7 +32,8 @@ describe('CreateTreatmentPlanUsecase', () => {
     });
 
     it('ignores a paidAmount sent by the client', async () => {
-        const plan = await useCase.execute({ ...input, paidAmount: 5000 } as any);
+        const clientInput = { ...input, paidAmount: 5000 };
+        const plan = await useCase.execute(clientInput);
         expect(plan.getPaidAmount()).toBe(0);
     });
 

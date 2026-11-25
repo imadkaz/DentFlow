@@ -1,51 +1,44 @@
-import { Invoice, InvoiceStatus } from "../../models/Invoice.model";
-import { IClinicRepository } from "../../repository/interfaces/IClinicRepository";
+import { Invoice } from "../../models/Invoice.model";
 import { IInvoiceRepository } from "../../repository/interfaces/IInvoiceRepository";
 import { IPatientRepository } from "../../repository/interfaces/IPatientRepository";
 import { ITreatmentPlanRepository } from "../../repository/interfaces/ITreatmentPlanRepository";
 import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
 
 export interface CreateInvoiceInput {
+    clinicId: string;       // from the request context, never from the body
     patientId: string;
-    clinicId: string;
     planId: string;
-    status: InvoiceStatus;
-    amount: number;
+    amountCents: number;
     dueDate: Date;
-    issuedAt?: Date;
 }
 
 export class CreateInvoiceUsecase {
     constructor(
         private readonly invoiceRepository: IInvoiceRepository,
         private readonly patientRepository: IPatientRepository,
-        private readonly clinicRepository: IClinicRepository,
         private readonly treatmentPlanRepository: ITreatmentPlanRepository
     ) {}
 
-    async execute(input: CreateInvoiceInput) {
+    async execute(input: CreateInvoiceInput): Promise<Invoice> {
         const patient = await this.patientRepository.findById(input.patientId);
-        if (!patient) {
+        // Same message for "missing" and "other clinic": don't reveal other tenants' records.
+        if (!patient || patient.getClinicId() !== input.clinicId) {
             throw new NotFoundError('Patient not found');
         }
-        const clinic = await this.clinicRepository.findById(input.clinicId);
-        if (!clinic) {
-            throw new NotFoundError('Clinic not found');
-        }
-        const treatmentPlan = await this.treatmentPlanRepository.findById(input.planId);
-        if (!treatmentPlan) {
-            throw new NotFoundError('Treatment plan not found');
+
+        const plan = await this.treatmentPlanRepository.findById(input.planId);
+        if (!plan || plan.getPatientId() !== patient.getId()) {
+            throw new NotFoundError('Treatment plan not found for this patient');
         }
 
-        const invoice = Invoice.create({
+        // status, issuedAt and paid amounts are server-owned.
+        const invoice = Invoice.issue({
             id: crypto.randomUUID(),
-            patientId: input.patientId,
             clinicId: input.clinicId,
-            planId: input.planId,
-            status: input.status,
-            amount: input.amount,
+            patientId: patient.getId(),
+            planId: plan.getId(),
+            amountCents: input.amountCents,
             dueDate: input.dueDate,
-            issuedAt: input.issuedAt,
         });
 
         return this.invoiceRepository.save(invoice);

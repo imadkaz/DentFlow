@@ -1,0 +1,1229 @@
+diff --git a/DentFlowGuideLine/DATABASE_GUIDELINES (1).md b/DentFlowGuideLine/DATABASE_GUIDELINES (1).md
+index 2499c8d..22912be 100644
+--- a/DentFlowGuideLine/DATABASE_GUIDELINES (1).md	
++++ b/DentFlowGuideLine/DATABASE_GUIDELINES (1).md	
+@@ -515,7 +515,7 @@ model Clinic {
+   logoUrl       String?
+   phone         String?            @db.VarChar(30)
+   email         String?            @unique @db.VarChar(120)
+-  currency      String?            @db.Varchar(3) @default("USD")
++  currency      String             @db.VarChar(3) @default("USD")
+   createdAt     DateTime           @default(now())
+   updatedAt     DateTime           @updatedAt
+   doctors       Doctor[]
+diff --git a/backend/src/Controllers/InvoiceControllers.ts b/backend/src/Controllers/InvoiceControllers.ts
+index 70190a8..effe14a 100644
+--- a/backend/src/Controllers/InvoiceControllers.ts
++++ b/backend/src/Controllers/InvoiceControllers.ts
+@@ -1,72 +1,89 @@
++import { Request, Response } from "express";
+ import { Invoice } from "../models/Invoice.model";
+ import { CreateInvoiceUsecase } from "../usecases/Invoice/CreateInvoiceUsecase";
+ import { GetInvoiceUsecase } from "../usecases/Invoice/GetInvoiceUsecase";
++import { GetPatientInvoicesUsecase } from "../usecases/Invoice/GetPatientInvoicesUsecase";
+ import { UpdateInvoiceUsecase } from "../usecases/Invoice/UpdateInvoiceUsecase";
+-import { Request, Response } from "express";
+-import { NotFoundError } from "../util/exceptions/http/NotFoundError";
++import { VoidInvoiceUsecase } from "../usecases/Invoice/VoidInvoiceUsecase";
++import { formatDateOnly, parseDateOnly } from "../util/date";
++import { ValidationError } from "../util/exceptions/http/ValidationError";
++import { getRequestContext } from "../util/requestContext";
+ 
+ export class InvoiceController {
+     constructor(
+         private readonly getInvoiceUsecase: GetInvoiceUsecase,
+         private readonly createInvoiceUsecase: CreateInvoiceUsecase,
+-        private readonly updateInvoiceUsecase: UpdateInvoiceUsecase
++        private readonly updateInvoiceUsecase: UpdateInvoiceUsecase,
++        private readonly voidInvoiceUsecase: VoidInvoiceUsecase,
++        private readonly getPatientInvoicesUsecase: GetPatientInvoicesUsecase
+     ) {}
+ 
+-    CreateInvoice = async (req: Request, res: Response) => {
++    createInvoice = async (req: Request, res: Response) => {
++        const { clinicId } = getRequestContext(req);
++        const input = req.body ?? {};
+ 
+-        const input = await req.body;
++        // Only these fields are accepted. status / issuedAt / clinicId in the body are ignored.
+         const invoice = await this.createInvoiceUsecase.execute({
+-            patientId: input.patientId,
+-            clinicId: input.clinicId,
+-            planId: input.planId,
+-            status: input.status,
+-            amount: input.amount,
+-            dueDate: input.dueDate,
+-            issuedAt: input.issuedAt,
++            clinicId,
++            patientId: this.requireString(input.patientId, 'patientId'),
++            planId: this.requireString(input.planId, 'planId'),
++            amountCents: input.amountCents,
++            dueDate: parseDateOnly(input.dueDate, 'dueDate'),
+         });
+ 
+         res.status(201).json(this.toResponse(invoice));
+     }
+ 
+     getInvoice = async (req: Request, res: Response) => {
+-        const  id  = req.params.id;
+-        if (!id) {
+-            throw new NotFoundError("Invoice ID is required");
+-        }
+-        const invoice = await this.getInvoiceUsecase.executeById(id as string);
++        const { clinicId } = getRequestContext(req);
++        const invoice = await this.getInvoiceUsecase.executeById(req.params.id as string, clinicId);
+         res.status(200).json(this.toResponse(invoice));
+     }
+ 
++    getPatientInvoices = async (req: Request, res: Response) => {
++        const { clinicId } = getRequestContext(req);
++        const invoices = await this.getPatientInvoicesUsecase.execute(req.params.patientId as string, clinicId);
++        res.status(200).json(invoices.map((i) => this.toResponse(i)));
++    }
++
+     updateInvoice = async (req: Request, res: Response) => {
+-        const id = req.params.id;
+-        const input = req.body;
++        const { clinicId } = getRequestContext(req);
++        const input = req.body ?? {};
+ 
+-        if (!id) {
+-            throw new NotFoundError("Invoice ID is required");
+-        }
+-        
+-        const updatedInvoice = await this.updateInvoiceUsecase.execute({
+-            id: id as string,
+-            status: input.status,
+-            amount: input.amount,
+-            dueDate: input.dueDate,
+-            issuedAt: input.issuedAt,
++        const invoice = await this.updateInvoiceUsecase.execute({
++            id: req.params.id as string,
++            clinicId,
++            dueDate: parseDateOnly(input.dueDate, 'dueDate'),
+         });
+ 
+-        res.status(200).json(this.toResponse(updatedInvoice));
++        res.status(200).json(this.toResponse(invoice));
++    }
++
++    voidInvoice = async (req: Request, res: Response) => {
++        const { clinicId } = getRequestContext(req);
++        const invoice = await this.voidInvoiceUsecase.execute(req.params.id as string, clinicId);
++        res.status(200).json(this.toResponse(invoice));
++    }
++
++    private requireString(value: unknown, field: string): string {
++        if (typeof value !== 'string' || value.trim().length === 0) {
++            throw new ValidationError(`${field} is required`);
++        }
++        return value;
+     }
+ 
+     private toResponse(invoice: Invoice) {
+         return {
+             id: invoice.getId(),
+-            patientId: invoice.getPatientId(),
+             clinicId: invoice.getClinicId(),
++            patientId: invoice.getPatientId(),
+             planId: invoice.getPlanId(),
+             status: invoice.getStatus(),
+-            amount: invoice.getAmount(),
+-            dueDate: invoice.getDueDate(),
++            amountCents: invoice.getAmountCents(),
++            paidCents: invoice.getPaidCents(),
++            balanceCents: invoice.getBalanceCents(),
++            dueDate: formatDateOnly(invoice.getDueDate()),
+             issuedAt: invoice.getIssuedAt(),
+         };
+     }
+-
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/Controllers/PaymentController.ts b/backend/src/Controllers/PaymentController.ts
+new file mode 100644
+index 0000000..9e159c3
+--- /dev/null
++++ b/backend/src/Controllers/PaymentController.ts
+@@ -0,0 +1,54 @@
++import { Request, Response } from "express";
++import { Payment, PayMethod } from "../models/Payment.model";
++import { GetInvoicePaymentsUsecase } from "../usecases/Payment/GetInvoicePaymentsUsecase";
++import { RecordPaymentUsecase } from "../usecases/Payment/RecordPaymentUsecase";
++import { ValidationError } from "../util/exceptions/http/ValidationError";
++import { getRequestContext } from "../util/requestContext";
++
++export class PaymentController {
++    constructor(
++        private readonly recordPaymentUsecase: RecordPaymentUsecase,
++        private readonly getInvoicePaymentsUsecase: GetInvoicePaymentsUsecase
++    ) {}
++
++    recordPayment = async (req: Request, res: Response) => {
++        const { clinicId } = getRequestContext(req);
++        const input = req.body ?? {};
++
++        let paidAt: Date | undefined;
++        if (input.paidAt !== undefined) {
++            paidAt = new Date(input.paidAt);
++            if (isNaN(paidAt.getTime())) {
++                throw new ValidationError('paidAt is not a valid date');
++            }
++        }
++
++        const payment = await this.recordPaymentUsecase.execute({
++            clinicId,
++            invoiceId: req.params.id as string,
++            amountCents: input.amountCents,
++            method: input.method as PayMethod | undefined,
++            reference: input.reference,
++            paidAt,
++        });
++
++        res.status(201).json(this.toResponse(payment));
++    }
++
++    getInvoicePayments = async (req: Request, res: Response) => {
++        const { clinicId } = getRequestContext(req);
++        const payments = await this.getInvoicePaymentsUsecase.execute(req.params.id as string, clinicId);
++        res.status(200).json(payments.map((p) => this.toResponse(p)));
++    }
++
++    private toResponse(payment: Payment) {
++        return {
++            id: payment.getId(),
++            invoiceId: payment.getInvoiceId(),
++            amountCents: payment.getAmountCents(),
++            method: payment.getMethod(),
++            reference: payment.getReference(),
++            paidAt: payment.getPaidAt(),
++        };
++    }
++}
+diff --git a/backend/src/mapper/Invoice.mapper.ts b/backend/src/mapper/Invoice.mapper.ts
+index 0b033c3..57daab7 100644
+--- a/backend/src/mapper/Invoice.mapper.ts
++++ b/backend/src/mapper/Invoice.mapper.ts
+@@ -1,29 +1,45 @@
+ import { Invoice, InvoiceStatus } from "../models/Invoice.model";
+-import { Prisma, Invoice as PrismaInvoice } from "../generated/prisma/client";
++import { Prisma } from "../generated/prisma/client";
++
++export type PrismaInvoiceWithPayments = Prisma.InvoiceGetPayload<{
++    include: { payments: { select: { amount: true } } };
++}>;
++
++export const invoiceInclude = { payments: { select: { amount: true } } } as const;
+ 
+ export class InvoiceMapper {
+-    static toDomain(raw: PrismaInvoice): Invoice {
++    static toDomain(raw: PrismaInvoiceWithPayments): Invoice {
++        const paidCents = raw.payments.reduce(
++            (sum, p) => sum + Math.round(p.amount.mul(100).toNumber()),
++            0,
++        );
+         return Invoice.create({
+             id: raw.id,
+-            patientId: raw.patientId,
+             clinicId: raw.clinicId,
++            patientId: raw.patientId,
+             planId: raw.planId,
+-            status: raw.status as InvoiceStatus,
+-            amount: Number(raw.amount),
+-            dueDate: new Date(raw.dueDate),
+-            issuedAt: raw.issuedAt ? new Date(raw.issuedAt) : undefined
++            amountCents: Math.round(raw.amount.mul(100).toNumber()),
++            dueDate: raw.dueDate,
++            issuedAt: raw.issuedAt,
++            voided: raw.status === 'void',
++            paidCents,
+         });
+     }
++
++    /**
++     * Only `unpaid` / `void` are ever stored. partial / paid / overdue are
++     * derived on read (decision D6), so they can never drift from payments.
++     */
+     static toPersistence(invoice: Invoice): Prisma.InvoiceUncheckedCreateInput {
+         return {
+             id: invoice.getId(),
+-            patientId: invoice.getPatientId(),
+             clinicId: invoice.getClinicId(),
++            patientId: invoice.getPatientId(),
+             planId: invoice.getPlanId(),
+-            status: invoice.getStatus(),
+-            amount: invoice.getAmount(),
++            status: invoice.isVoided() ? InvoiceStatus.VOID : InvoiceStatus.UNPAID,
++            amount: new Prisma.Decimal(invoice.getAmountCents()).div(100),
+             dueDate: invoice.getDueDate(),
+-            issuedAt: invoice.getIssuedAt()
++            issuedAt: invoice.getIssuedAt(),
+         };
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/mapper/Payment.mapper.ts b/backend/src/mapper/Payment.mapper.ts
+new file mode 100644
+index 0000000..42ef61e
+--- /dev/null
++++ b/backend/src/mapper/Payment.mapper.ts
+@@ -0,0 +1,26 @@
++import { Payment, PayMethod } from "../models/Payment.model";
++import { Prisma, Payment as PrismaPayment } from "../generated/prisma/client";
++
++export class PaymentMapper {
++    static toDomain(raw: PrismaPayment): Payment {
++        return Payment.create({
++            id: raw.id,
++            invoiceId: raw.invoiceId,
++            amountCents: Math.round(raw.amount.mul(100).toNumber()),
++            method: raw.method as PayMethod,
++            reference: raw.reference,
++            paidAt: raw.paidAt,
++        });
++    }
++
++    static toPersistence(payment: Payment): Prisma.PaymentUncheckedCreateInput {
++        return {
++            id: payment.getId(),
++            invoiceId: payment.getInvoiceId(),
++            amount: new Prisma.Decimal(payment.getAmountCents()).div(100),
++            method: payment.getMethod(),
++            reference: payment.getReference(),
++            paidAt: payment.getPaidAt(),
++        };
++    }
++}
+diff --git a/backend/src/models/Invoice.model.ts b/backend/src/models/Invoice.model.ts
+index 7799443..a2a698c 100644
+--- a/backend/src/models/Invoice.model.ts
++++ b/backend/src/models/Invoice.model.ts
+@@ -1,59 +1,108 @@
+ import { ValidationError } from "../util/exceptions/http/ValidationError";
++import { formatDateOnly, toBeirutDateString, todayInBeirut } from "../util/date";
+ 
+ export enum InvoiceStatus {
+-   UNPAID = "unpaid",
+-   PARTIAL = "partial",
+-   PAID = "paid",
+-   OVERDUE = "overdue",
+-   VOID = "void"
++    UNPAID = "unpaid",
++    PARTIAL = "partial",
++    PAID = "paid",
++    OVERDUE = "overdue",
++    VOID = "void"
+ }
++
+ export interface InvoiceProps {
+     id: string;
+-    patientId: string;
+     clinicId: string;
++    patientId: string;
+     planId: string;
+-    status: InvoiceStatus;
+-    amount: number;
++    amountCents: number;
+     dueDate: Date;
+     issuedAt?: Date;
++    /** Persisted flag. Every other status is derived (decision D6). */
++    voided?: boolean;
++    /** Derived from payments by the repository; never persisted on the invoice. */
++    paidCents?: number;
+ }
+ 
+ export class Invoice {
+     private constructor(
+         private readonly id: string,
+-        private readonly patientId: string,
+         private readonly clinicId: string,
++        private readonly patientId: string,
+         private readonly planId: string,
+-        private status: InvoiceStatus,
+-        private amount: number,
++        private readonly amountCents: number,
+         private dueDate: Date,
+-        private issuedAt?: Date
++        private readonly issuedAt: Date,
++        private readonly voided: boolean,
++        private readonly paidCents: number,
+     ) {}
+ 
++    /** Rehydrate an existing invoice (e.g. from the DB). Structural checks only. */
+     static create(props: InvoiceProps): Invoice {
+-
+-        if(props.amount < 0){
+-            throw new ValidationError('Invoice amount cannot be negative');
++        if (!Number.isInteger(props.amountCents) || props.amountCents <= 0) {
++            throw new ValidationError('Invoice amount must be a positive integer (cents)');
++        }
++        if (!(props.dueDate instanceof Date) || isNaN(props.dueDate.getTime())) {
++            throw new ValidationError('Invalid due date');
++        }
++        const paidCents = props.paidCents ?? 0;
++        if (!Number.isInteger(paidCents) || paidCents < 0) {
++            throw new ValidationError('Paid amount must be a non-negative integer (cents)');
+         }
+-
+-        const now = new Date();
+         return new Invoice(
+             props.id,
+-            props.patientId,
+             props.clinicId,
++            props.patientId,
+             props.planId,
+-            props.status,
+-            props.amount,
++            props.amountCents,
+             props.dueDate,
+-            props.issuedAt ?? now,
++            props.issuedAt ?? new Date(),
++            props.voided ?? false,
++            paidCents,
+         );
+     }
++
++    /** Issue a brand-new invoice: structural checks + business rules. */
++    static issue(props: Omit<InvoiceProps, 'issuedAt' | 'voided' | 'paidCents'>): Invoice {
++        const issuedAt = new Date();
++        Invoice.assertDueDateNotBeforeIssue(props.dueDate, issuedAt);
++        return Invoice.create({ ...props, issuedAt });
++    }
++
++    private static assertDueDateNotBeforeIssue(dueDate: Date, issuedAt: Date): void {
++        if (!(dueDate instanceof Date) || isNaN(dueDate.getTime())) {
++            throw new ValidationError('Invalid due date');
++        }
++        // Compare calendar dates (Beirut), never raw timestamps.
++        if (formatDateOnly(dueDate) < toBeirutDateString(issuedAt)) {
++            throw new ValidationError('Due date cannot be before the issue date');
++        }
++    }
++
++    changeDueDate(newDueDate: Date): void {
++        Invoice.assertDueDateNotBeforeIssue(newDueDate, this.issuedAt);
++        this.dueDate = newDueDate;
++    }
++
++    /**
++     * Effective status, derived on read. `today` is a Beirut 'YYYY-MM-DD'
++     * (injectable for tests).
++     */
++    getStatus(today: string = todayInBeirut()): InvoiceStatus {
++        if (this.voided) return InvoiceStatus.VOID;
++        if (this.paidCents >= this.amountCents) return InvoiceStatus.PAID;
++        if (formatDateOnly(this.dueDate) < today) return InvoiceStatus.OVERDUE;
++        if (this.paidCents > 0) return InvoiceStatus.PARTIAL;
++        return InvoiceStatus.UNPAID;
++    }
++
+     getId(): string { return this.id; }
+-    getPatientId(): string { return this.patientId; }
+     getClinicId(): string { return this.clinicId; }
++    getPatientId(): string { return this.patientId; }
+     getPlanId(): string { return this.planId; }
+-    getStatus(): InvoiceStatus { return this.status; }
+-    getAmount(): number { return this.amount; }
++    getAmountCents(): number { return this.amountCents; }
++    getPaidCents(): number { return this.paidCents; }
++    getBalanceCents(): number { return this.amountCents - this.paidCents; }
+     getDueDate(): Date { return this.dueDate; }
+-    getIssuedAt(): Date | undefined { return this.issuedAt; }
+-}
+\ No newline at end of file
++    getIssuedAt(): Date { return this.issuedAt; }
++    isVoided(): boolean { return this.voided; }
++}
+diff --git a/backend/src/models/Payment.model.ts b/backend/src/models/Payment.model.ts
+new file mode 100644
+index 0000000..b7ef579
+--- /dev/null
++++ b/backend/src/models/Payment.model.ts
+@@ -0,0 +1,72 @@
++import { ValidationError } from "../util/exceptions/http/ValidationError";
++
++export enum PayMethod {
++    CASH = "cash",
++    CARD = "card",
++    INSURANCE = "insurance",
++    BANK_TRANSFER = "bank_transfer",
++    OTHER = "other"
++}
++
++/** Methods that must carry a reference (receipt / transfer number). Business rule, change here. */
++const METHODS_REQUIRING_REFERENCE: PayMethod[] = [PayMethod.CARD, PayMethod.BANK_TRANSFER];
++
++const MAX_CLOCK_SKEW_MS = 5 * 60 * 1000;
++
++export interface PaymentProps {
++    id: string;
++    invoiceId: string;
++    amountCents: number;
++    method?: PayMethod;
++    reference?: string | null;
++    paidAt?: Date;
++}
++
++export class Payment {
++    private constructor(
++        private readonly id: string,
++        private readonly invoiceId: string,
++        private readonly amountCents: number,
++        private readonly method: PayMethod,
++        private readonly reference: string | null,
++        private readonly paidAt: Date,
++    ) {}
++
++    static create(props: PaymentProps): Payment {
++        if (!Number.isInteger(props.amountCents) || props.amountCents <= 0) {
++            throw new ValidationError('Payment amount must be a positive integer (cents)');
++        }
++        const method = props.method ?? PayMethod.CASH;
++        if (!Object.values(PayMethod).includes(method)) {
++            throw new ValidationError('Invalid payment method');
++        }
++        const reference = props.reference?.trim() || null;
++        if (reference && reference.length > 80) {
++            throw new ValidationError('Payment reference must be at most 80 characters');
++        }
++        const paidAt = props.paidAt ?? new Date();
++        if (isNaN(paidAt.getTime())) {
++            throw new ValidationError('Invalid paidAt date');
++        }
++        return new Payment(props.id, props.invoiceId, props.amountCents, method, reference, paidAt);
++    }
++
++    /** Record a brand-new payment: structural checks + business rules. Loading from the DB uses `create`. */
++    static record(props: PaymentProps): Payment {
++        const payment = Payment.create(props);
++        if (!payment.reference && METHODS_REQUIRING_REFERENCE.includes(payment.method)) {
++            throw new ValidationError(`A reference is required for ${payment.method} payments`);
++        }
++        if (payment.paidAt.getTime() > Date.now() + MAX_CLOCK_SKEW_MS) {
++            throw new ValidationError('paidAt cannot be in the future');
++        }
++        return payment;
++    }
++
++    getId(): string { return this.id; }
++    getInvoiceId(): string { return this.invoiceId; }
++    getAmountCents(): number { return this.amountCents; }
++    getMethod(): PayMethod { return this.method; }
++    getReference(): string | null { return this.reference; }
++    getPaidAt(): Date { return this.paidAt; }
++}
+diff --git a/backend/src/models/tests/Invoice.model.test.ts b/backend/src/models/tests/Invoice.model.test.ts
+new file mode 100644
+index 0000000..bbb688d
+--- /dev/null
++++ b/backend/src/models/tests/Invoice.model.test.ts
+@@ -0,0 +1,68 @@
++import { describe, it, expect } from 'vitest';
++import { Invoice, InvoiceStatus } from '../Invoice.model';
++import { Payment, PayMethod } from '../Payment.model';
++import { parseDateOnly } from '../../util/date';
++
++const base = {
++    id: 'i1', clinicId: 'c1', patientId: 'p1', planId: 'pl1',
++    amountCents: 10_000, dueDate: parseDateOnly('2030-01-31'),
++};
++
++describe('Invoice status (derived)', () => {
++    it('unpaid when nothing paid and not due', () => {
++        expect(Invoice.create(base).getStatus('2030-01-01')).toBe(InvoiceStatus.UNPAID);
++    });
++    it('partial when some paid', () => {
++        expect(Invoice.create({ ...base, paidCents: 4_000 }).getStatus('2030-01-01')).toBe(InvoiceStatus.PARTIAL);
++    });
++    it('paid when fully paid, even if past due', () => {
++        expect(Invoice.create({ ...base, paidCents: 10_000 }).getStatus('2031-01-01')).toBe(InvoiceStatus.PAID);
++    });
++    it('overdue when past due and unpaid or partial', () => {
++        expect(Invoice.create(base).getStatus('2030-02-01')).toBe(InvoiceStatus.OVERDUE);
++        expect(Invoice.create({ ...base, paidCents: 1 }).getStatus('2030-02-01')).toBe(InvoiceStatus.OVERDUE);
++    });
++    it('not overdue on the due date itself', () => {
++        expect(Invoice.create(base).getStatus('2030-01-31')).toBe(InvoiceStatus.UNPAID);
++    });
++    it('void wins over everything', () => {
++        expect(Invoice.create({ ...base, voided: true, paidCents: 10_000 }).getStatus('2031-01-01')).toBe(InvoiceStatus.VOID);
++    });
++});
++
++describe('Invoice rules', () => {
++    it('rejects non-integer, zero and negative amounts', () => {
++        for (const amountCents of [0, -5, 10.5, NaN]) {
++            expect(() => Invoice.create({ ...base, amountCents })).toThrow();
++        }
++    });
++    it('issue() rejects a due date before today', () => {
++        expect(() => Invoice.issue({ ...base, dueDate: parseDateOnly('2000-01-01') })).toThrow(/before the issue date/);
++    });
++    it('parseDateOnly rejects garbage and impossible dates', () => {
++        for (const v of ['garbage', '2030-13-01', '2030-02-31', 20300101, undefined]) {
++            expect(() => parseDateOnly(v)).toThrow();
++        }
++    });
++});
++
++describe('Payment rules', () => {
++    const p = { id: 'x', invoiceId: 'i1', amountCents: 500 };
++    it('requires a positive integer amount', () => {
++        for (const amountCents of [0, -1, 1.5]) {
++            expect(() => Payment.record({ ...p, amountCents })).toThrow();
++        }
++    });
++    it('requires a reference for card and bank_transfer, not for cash', () => {
++        expect(() => Payment.record({ ...p, method: PayMethod.CARD })).toThrow(/reference is required/);
++        expect(() => Payment.record({ ...p, method: PayMethod.BANK_TRANSFER })).toThrow(/reference is required/);
++        expect(Payment.record({ ...p, method: PayMethod.CASH }).getMethod()).toBe(PayMethod.CASH);
++        expect(Payment.record({ ...p, method: PayMethod.CARD, reference: 'R1' }).getReference()).toBe('R1');
++    });
++    it('rejects a paidAt in the future', () => {
++        expect(() => Payment.record({ ...p, paidAt: new Date(Date.now() + 3_600_000) })).toThrow(/future/);
++    });
++    it('create() (DB rehydrate) does not apply record-time business rules', () => {
++        expect(Payment.create({ ...p, method: PayMethod.CARD }).getReference()).toBeNull();
++    });
++});
+diff --git a/backend/src/repository/InvoiceRepository.ts b/backend/src/repository/InvoiceRepository.ts
+index 59c8d59..7c9f70d 100644
+--- a/backend/src/repository/InvoiceRepository.ts
++++ b/backend/src/repository/InvoiceRepository.ts
+@@ -1,45 +1,73 @@
+ import { PrismaClient } from "../generated/prisma/client";
+-import { InvoiceMapper } from "../mapper/Invoice.mapper";
++import { InvoiceMapper, invoiceInclude } from "../mapper/Invoice.mapper";
+ import { Invoice } from "../models/Invoice.model";
++import { ConflictError } from "../util/exceptions/http/ConflictError";
++import { NotFoundError } from "../util/exceptions/http/NotFoundError";
+ import { IInvoiceRepository } from "./interfaces/IInvoiceRepository";
+ 
+ export class InvoiceRepository implements IInvoiceRepository {
+     constructor(private readonly prisma: PrismaClient) { }
+ 
+-
+-    async findById(id: string): Promise<Invoice | null> {
+-        const raw = await this.prisma.invoice.findUnique({
+-            where: { id }
++    async findById(id: string, clinicId: string): Promise<Invoice | null> {
++        const raw = await this.prisma.invoice.findFirst({
++            where: { id, clinicId },
++            include: invoiceInclude,
+         });
+-
+         return raw ? InvoiceMapper.toDomain(raw) : null;
+     }
+-    async findByPatientId(patientId: string): Promise<Invoice[]> {
++
++    async findByPatientId(patientId: string, clinicId: string): Promise<Invoice[]> {
+         const raws = await this.prisma.invoice.findMany({
+-            where: { patientId }
++            where: { patientId, clinicId },
++            include: invoiceInclude,
++            orderBy: { issuedAt: 'desc' },
+         });
+-
+         return raws.map(InvoiceMapper.toDomain);
+     }
+ 
+     async save(invoice: Invoice): Promise<Invoice> {
+         const raw = await this.prisma.invoice.create({
+-            data: InvoiceMapper.toPersistence(invoice)
++            data: InvoiceMapper.toPersistence(invoice),
++            include: invoiceInclude,
+         });
+-        
+         return InvoiceMapper.toDomain(raw);
+     }
++
+     async update(invoice: Invoice): Promise<Invoice> {
+         const raw = await this.prisma.invoice.update({
+             where: { id: invoice.getId() },
+-            data: InvoiceMapper.toPersistence(invoice)
++            data: InvoiceMapper.toPersistence(invoice),
++            include: invoiceInclude,
+         });
+-
+         return InvoiceMapper.toDomain(raw);
+     }
+-    async delete(id: string): Promise<void> {
+-        await this.prisma.invoice.delete({
+-            where: { id }
++
++    async voidInvoice(id: string, clinicId: string): Promise<Invoice> {
++        return this.prisma.$transaction(async (tx) => {
++            // Same row lock as recordPayment: a payment and a void cannot interleave.
++            const locked = await tx.$queryRaw<{ id: string }[]>`
++                SELECT "id" FROM "invoices"
++                WHERE "id" = ${id} AND "clinicId" = ${clinicId}
++                FOR UPDATE`;
++            if (locked.length === 0) {
++                throw new NotFoundError('Invoice not found');
++            }
++
++            const current = await tx.invoice.findUniqueOrThrow({ where: { id } });
++            if (current.status === 'void') {
++                throw new ConflictError('Invoice is already void');
++            }
++            const paymentCount = await tx.payment.count({ where: { invoiceId: id } });
++            if (paymentCount > 0) {
++                throw new ConflictError('Cannot void an invoice that has payments');
++            }
++
++            const raw = await tx.invoice.update({
++                where: { id },
++                data: { status: 'void' },
++                include: invoiceInclude,
++            });
++            return InvoiceMapper.toDomain(raw);
+         });
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/repository/PaymentRepository.ts b/backend/src/repository/PaymentRepository.ts
+new file mode 100644
+index 0000000..b217f37
+--- /dev/null
++++ b/backend/src/repository/PaymentRepository.ts
+@@ -0,0 +1,64 @@
++import { PrismaClient } from "../generated/prisma/client";
++import { PaymentMapper } from "../mapper/Payment.mapper";
++import { Payment } from "../models/Payment.model";
++import { ConflictError } from "../util/exceptions/http/ConflictError";
++import { NotFoundError } from "../util/exceptions/http/NotFoundError";
++import { IPaymentRepository } from "./interfaces/IPaymentRepository";
++
++export class PaymentRepository implements IPaymentRepository {
++    constructor(private readonly prisma: PrismaClient) { }
++
++    async recordPayment(payment: Payment, clinicId: string): Promise<Payment> {
++        return this.prisma.$transaction(async (tx) => {
++            // 1. Lock the invoice row. Concurrent payments (and voids) on the same
++            //    invoice queue here; each one re-reads the sum after the previous commits.
++            const locked = await tx.$queryRaw<{ id: string }[]>`
++                SELECT "id" FROM "invoices"
++                WHERE "id" = ${payment.getInvoiceId()} AND "clinicId" = ${clinicId}
++                FOR UPDATE`;
++            if (locked.length === 0) {
++                throw new NotFoundError('Invoice not found');
++            }
++
++            // 2. Read invoice + current paid sum INSIDE the lock.
++            const invoice = await tx.invoice.findUniqueOrThrow({
++                where: { id: payment.getInvoiceId() },
++            });
++            if (invoice.status === 'void') {
++                throw new ConflictError('Cannot pay a void invoice');
++            }
++
++            const agg = await tx.payment.aggregate({
++                where: { invoiceId: invoice.id },
++                _sum: { amount: true },
++            });
++            const amountCents = Math.round(invoice.amount.mul(100).toNumber());
++            const paidCents = agg._sum.amount
++                ? Math.round(agg._sum.amount.mul(100).toNumber())
++                : 0;
++
++            if (paidCents >= amountCents) {
++                throw new ConflictError('Invoice is already fully paid');
++            }
++            if (paidCents + payment.getAmountCents() > amountCents) {
++                throw new ConflictError(
++                    `Payment exceeds the remaining balance (${amountCents - paidCents} cents)`,
++                );
++            }
++
++            // 3. Insert. Invoice status is derived on read, so nothing else to update.
++            const raw = await tx.payment.create({
++                data: PaymentMapper.toPersistence(payment),
++            });
++            return PaymentMapper.toDomain(raw);
++        });
++    }
++
++    async findByInvoiceId(invoiceId: string, clinicId: string): Promise<Payment[]> {
++        const raws = await this.prisma.payment.findMany({
++            where: { invoiceId, invoice: { clinicId } },
++            orderBy: { paidAt: 'asc' },
++        });
++        return raws.map(PaymentMapper.toDomain);
++    }
++}
+diff --git a/backend/src/repository/interfaces/IInvoiceRepository.ts b/backend/src/repository/interfaces/IInvoiceRepository.ts
+index 26ee260..681f70a 100644
+--- a/backend/src/repository/interfaces/IInvoiceRepository.ts
++++ b/backend/src/repository/interfaces/IInvoiceRepository.ts
+@@ -1,6 +1,18 @@
+ import { Invoice } from "../../models/Invoice.model";
+-import { IRepository } from "./IRepository";
+ 
+-export interface IInvoiceRepository extends IRepository<Invoice> {
+-    findByPatientId(patientId: string): Promise<Invoice[]>;
+-}
+\ No newline at end of file
++/**
++ * Deliberately does NOT extend IRepository: invoices are financial records
++ * and are never hard-deleted. Every read is scoped by clinicId (tenant isolation).
++ */
++export interface IInvoiceRepository {
++    findById(id: string, clinicId: string): Promise<Invoice | null>;
++    findByPatientId(patientId: string, clinicId: string): Promise<Invoice[]>;
++    save(invoice: Invoice): Promise<Invoice>;
++    update(invoice: Invoice): Promise<Invoice>;
++    /**
++     * Atomically voids an invoice. Must fail with ConflictError if the invoice
++     * already has payments or is already void, and with NotFoundError if it
++     * does not exist in this clinic.
++     */
++    voidInvoice(id: string, clinicId: string): Promise<Invoice>;
++}
+diff --git a/backend/src/repository/interfaces/IPaymentRepository.ts b/backend/src/repository/interfaces/IPaymentRepository.ts
+new file mode 100644
+index 0000000..86baa76
+--- /dev/null
++++ b/backend/src/repository/interfaces/IPaymentRepository.ts
+@@ -0,0 +1,13 @@
++import { Payment } from "../../models/Payment.model";
++
++export interface IPaymentRepository {
++    /**
++     * Atomically records a payment. Implementations MUST serialize concurrent
++     * payments on the same invoice and, inside that critical section, reject with
++     * ConflictError when the invoice is void, already fully paid, or when
++     * SUM(payments) + payment.amount would exceed the invoice amount.
++     * Rejects with NotFoundError if the invoice is not in this clinic.
++     */
++    recordPayment(payment: Payment, clinicId: string): Promise<Payment>;
++    findByInvoiceId(invoiceId: string, clinicId: string): Promise<Payment[]>;
++}
+diff --git a/backend/src/routes/Invoice.Routes.ts b/backend/src/routes/Invoice.Routes.ts
+new file mode 100644
+index 0000000..d757737
+--- /dev/null
++++ b/backend/src/routes/Invoice.Routes.ts
+@@ -0,0 +1,21 @@
++import { Router } from "express";
++import { InvoiceController } from "../Controllers/InvoiceControllers";
++import { PaymentController } from "../Controllers/PaymentController";
++import { asyncHandler } from "../middleware/asyncHandler";
++
++export const InvoiceRoutes = (
++    invoiceController: InvoiceController,
++    paymentController: PaymentController
++): Router => {
++    const route = Router();
++
++    route.post('/', asyncHandler(invoiceController.createInvoice));
++    route.get('/patient/:patientId', asyncHandler(invoiceController.getPatientInvoices));
++    route.get('/:id', asyncHandler(invoiceController.getInvoice));
++    route.patch('/:id', asyncHandler(invoiceController.updateInvoice));
++    route.post('/:id/void', asyncHandler(invoiceController.voidInvoice));
++    route.post('/:id/payments', asyncHandler(paymentController.recordPayment));
++    route.get('/:id/payments', asyncHandler(paymentController.getInvoicePayments));
++
++    return route;
++};
+diff --git a/backend/src/routes/index.ts b/backend/src/routes/index.ts
+index afad7a6..f0ab3d3 100644
+--- a/backend/src/routes/index.ts
++++ b/backend/src/routes/index.ts
+@@ -90,8 +90,19 @@ import { GetPlanStagesUsecase } from '../usecases/TreatmentStage/GetPlansStagesU
+ import { DeleteTreatmentStageUsecase } from '../usecases/TreatmentStage/DeleteTreatmentStageUsecase';
+ import { TreatmentStageRoutes } from './TreatmentStage.Routes';
+ 
+-
+-
++// Invoice & Payment
++import { InvoiceRepository } from '../repository/InvoiceRepository';
++import { PaymentRepository } from '../repository/PaymentRepository';
++import { InvoiceController } from '../Controllers/InvoiceControllers';
++import { PaymentController } from '../Controllers/PaymentController';
++import { CreateInvoiceUsecase } from '../usecases/Invoice/CreateInvoiceUsecase';
++import { GetInvoiceUsecase } from '../usecases/Invoice/GetInvoiceUsecase';
++import { GetPatientInvoicesUsecase } from '../usecases/Invoice/GetPatientInvoicesUsecase';
++import { UpdateInvoiceUsecase } from '../usecases/Invoice/UpdateInvoiceUsecase';
++import { VoidInvoiceUsecase } from '../usecases/Invoice/VoidInvoiceUsecase';
++import { RecordPaymentUsecase } from '../usecases/Payment/RecordPaymentUsecase';
++import { GetInvoicePaymentsUsecase } from '../usecases/Payment/GetInvoicePaymentsUsecase';
++import { InvoiceRoutes } from './Invoice.Routes';
+ 
+ 
+ const routes = Router();
+@@ -195,6 +206,22 @@ const treatmentStageController = new TreatmentStageController(
+ 
+ 
+ 
++// ---- Invoice & Payment ----
++const invoiceRepository = new InvoiceRepository(prisma);
++const paymentRepository = new PaymentRepository(prisma);
++const invoiceController = new InvoiceController(
++    new GetInvoiceUsecase(invoiceRepository),
++    new CreateInvoiceUsecase(invoiceRepository, patientRepository, treatmentPlanRepository),
++    new UpdateInvoiceUsecase(invoiceRepository),
++    new VoidInvoiceUsecase(invoiceRepository),
++    new GetPatientInvoicesUsecase(invoiceRepository, patientRepository)
++)
++const paymentController = new PaymentController(
++    new RecordPaymentUsecase(paymentRepository, invoiceRepository),
++    new GetInvoicePaymentsUsecase(paymentRepository, invoiceRepository)
++)
++
++
+ routes.use('/clinics', ClinicRoutes(clinicController));
+ routes.use('/users', UserRoutes(userController));
+ routes.use('/doctors', DoctorRoutes(doctorController));
+@@ -204,5 +231,6 @@ routes.use('/appointments', AppointmentRoutes(appointmentController));
+ routes.use('/medical-records', MedicalRoutes(medicalRecordController));
+ routes.use('/treatment-plans', TreatmentPlanRoutes(treatmentPlanController));
+ routes.use('/treatment-stages', TreatmentStageRoutes(treatmentStageController));
++routes.use('/invoices', InvoiceRoutes(invoiceController, paymentController));
+ 
+ export default routes;
+diff --git a/backend/src/usecases/Invoice/CreateInvoiceUsecase.ts b/backend/src/usecases/Invoice/CreateInvoiceUsecase.ts
+index 8911337..ddb79e9 100644
+--- a/backend/src/usecases/Invoice/CreateInvoiceUsecase.ts
++++ b/backend/src/usecases/Invoice/CreateInvoiceUsecase.ts
+@@ -1,53 +1,46 @@
+-import { Invoice, InvoiceStatus } from "../../models/Invoice.model";
+-import { IClinicRepository } from "../../repository/interfaces/IClinicRepository";
++import { Invoice } from "../../models/Invoice.model";
+ import { IInvoiceRepository } from "../../repository/interfaces/IInvoiceRepository";
+ import { IPatientRepository } from "../../repository/interfaces/IPatientRepository";
+ import { ITreatmentPlanRepository } from "../../repository/interfaces/ITreatmentPlanRepository";
+ import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
+ 
+ export interface CreateInvoiceInput {
++    clinicId: string;       // from the request context, never from the body
+     patientId: string;
+-    clinicId: string;
+     planId: string;
+-    status: InvoiceStatus;
+-    amount: number;
++    amountCents: number;
+     dueDate: Date;
+-    issuedAt?: Date;
+ }
+ 
+ export class CreateInvoiceUsecase {
+     constructor(
+         private readonly invoiceRepository: IInvoiceRepository,
+         private readonly patientRepository: IPatientRepository,
+-        private readonly clinicRepository: IClinicRepository,
+         private readonly treatmentPlanRepository: ITreatmentPlanRepository
+     ) {}
+ 
+-    async execute(input: CreateInvoiceInput) {
++    async execute(input: CreateInvoiceInput): Promise<Invoice> {
+         const patient = await this.patientRepository.findById(input.patientId);
+-        if (!patient) {
++        // Same message for "missing" and "other clinic": don't reveal other tenants' records.
++        if (!patient || patient.getClinicId() !== input.clinicId) {
+             throw new NotFoundError('Patient not found');
+         }
+-        const clinic = await this.clinicRepository.findById(input.clinicId);
+-        if (!clinic) {
+-            throw new NotFoundError('Clinic not found');
+-        }
+-        const treatmentPlan = await this.treatmentPlanRepository.findById(input.planId);
+-        if (!treatmentPlan) {
+-            throw new NotFoundError('Treatment plan not found');
++
++        const plan = await this.treatmentPlanRepository.findById(input.planId);
++        if (!plan || plan.getPatientId() !== patient.getId()) {
++            throw new NotFoundError('Treatment plan not found for this patient');
+         }
+ 
+-        const invoice = Invoice.create({
++        // status, issuedAt and paid amounts are server-owned.
++        const invoice = Invoice.issue({
+             id: crypto.randomUUID(),
+-            patientId: input.patientId,
+             clinicId: input.clinicId,
+-            planId: input.planId,
+-            status: input.status,
+-            amount: input.amount,
++            patientId: patient.getId(),
++            planId: plan.getId(),
++            amountCents: input.amountCents,
+             dueDate: input.dueDate,
+-            issuedAt: input.issuedAt,
+         });
+ 
+         return this.invoiceRepository.save(invoice);
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/usecases/Invoice/GetInvoiceUsecase.ts b/backend/src/usecases/Invoice/GetInvoiceUsecase.ts
+index f815525..94113af 100644
+--- a/backend/src/usecases/Invoice/GetInvoiceUsecase.ts
++++ b/backend/src/usecases/Invoice/GetInvoiceUsecase.ts
+@@ -1,15 +1,15 @@
++import { Invoice } from "../../models/Invoice.model";
+ import { IInvoiceRepository } from "../../repository/interfaces/IInvoiceRepository";
+ import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
+ 
+ export class GetInvoiceUsecase {
+     constructor(private readonly invoiceRepository: IInvoiceRepository) {}
+ 
+-    async executeById(invoiceId: string) {
+-        const invoice = await this.invoiceRepository.findById(invoiceId);
++    async executeById(invoiceId: string, clinicId: string): Promise<Invoice> {
++        const invoice = await this.invoiceRepository.findById(invoiceId, clinicId);
+         if (!invoice) {
+             throw new NotFoundError('Invoice not found');
+         }
+-
+         return invoice;
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/usecases/Invoice/GetPatientInvoicesUsecase.ts b/backend/src/usecases/Invoice/GetPatientInvoicesUsecase.ts
+new file mode 100644
+index 0000000..8cb2aea
+--- /dev/null
++++ b/backend/src/usecases/Invoice/GetPatientInvoicesUsecase.ts
+@@ -0,0 +1,19 @@
++import { Invoice } from "../../models/Invoice.model";
++import { IInvoiceRepository } from "../../repository/interfaces/IInvoiceRepository";
++import { IPatientRepository } from "../../repository/interfaces/IPatientRepository";
++import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
++
++export class GetPatientInvoicesUsecase {
++    constructor(
++        private readonly invoiceRepository: IInvoiceRepository,
++        private readonly patientRepository: IPatientRepository
++    ) {}
++
++    async execute(patientId: string, clinicId: string): Promise<Invoice[]> {
++        const patient = await this.patientRepository.findById(patientId);
++        if (!patient || patient.getClinicId() !== clinicId) {
++            throw new NotFoundError('Patient not found');
++        }
++        return this.invoiceRepository.findByPatientId(patientId, clinicId);
++    }
++}
+diff --git a/backend/src/usecases/Invoice/UpdateInvoiceUsecase.ts b/backend/src/usecases/Invoice/UpdateInvoiceUsecase.ts
+index 7c8b303..039069f 100644
+--- a/backend/src/usecases/Invoice/UpdateInvoiceUsecase.ts
++++ b/backend/src/usecases/Invoice/UpdateInvoiceUsecase.ts
+@@ -1,37 +1,32 @@
+-import { Invoice, InvoiceStatus } from "../../models/Invoice.model";
++import { Invoice } from "../../models/Invoice.model";
+ import { IInvoiceRepository } from "../../repository/interfaces/IInvoiceRepository";
++import { ConflictError } from "../../util/exceptions/http/ConflictError";
+ import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
+ 
++/**
++ * Only the due date is editable. Amount and status are NOT editable here:
++ * status is derived from payments, voiding has its own use case, and the
++ * amount is immutable (correct a mistake by voiding and re-issuing).
++ */
+ export interface InvoiceUpdateInput {
+     id: string;
+-    status?: InvoiceStatus;
+-    amount?: number;
+-    dueDate?: Date;
+-    issuedAt?: Date;
++    clinicId: string;
++    dueDate: Date;
+ }
+ 
+ export class UpdateInvoiceUsecase {
+-    constructor(
+-        private readonly invoiceRepository: IInvoiceRepository
+-    ) {}
+-    
+-    async execute(input: InvoiceUpdateInput) {
+-        const invoice = await this.invoiceRepository.findById(input.id);
++    constructor(private readonly invoiceRepository: IInvoiceRepository) {}
++
++    async execute(input: InvoiceUpdateInput): Promise<Invoice> {
++        const invoice = await this.invoiceRepository.findById(input.id, input.clinicId);
+         if (!invoice) {
+             throw new NotFoundError('Invoice not found');
+         }
++        if (invoice.isVoided()) {
++            throw new ConflictError('Cannot edit a void invoice');
++        }
+ 
+-        const updatedInvoice = Invoice.create({
+-            id: invoice.getId(),
+-            patientId: invoice.getPatientId(),
+-            clinicId: invoice.getClinicId(),
+-            planId: invoice.getPlanId(),
+-            status: input.status !== undefined ? input.status : invoice.getStatus(),
+-            amount: input.amount !== undefined ? input.amount : invoice.getAmount(),
+-            dueDate: input.dueDate !== undefined ? input.dueDate : invoice.getDueDate(),
+-            issuedAt: input.issuedAt !== undefined ? input.issuedAt : invoice.getIssuedAt(),
+-        });
+-        
+-        return this.invoiceRepository.update(updatedInvoice);
++        invoice.changeDueDate(input.dueDate);
++        return this.invoiceRepository.update(invoice);
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/usecases/Invoice/VoidInvoiceUsecase.ts b/backend/src/usecases/Invoice/VoidInvoiceUsecase.ts
+new file mode 100644
+index 0000000..600a057
+--- /dev/null
++++ b/backend/src/usecases/Invoice/VoidInvoiceUsecase.ts
+@@ -0,0 +1,11 @@
++import { Invoice } from "../../models/Invoice.model";
++import { IInvoiceRepository } from "../../repository/interfaces/IInvoiceRepository";
++
++export class VoidInvoiceUsecase {
++    constructor(private readonly invoiceRepository: IInvoiceRepository) {}
++
++    // The "no payments / not already void" rule is enforced atomically in the repository.
++    async execute(invoiceId: string, clinicId: string): Promise<Invoice> {
++        return this.invoiceRepository.voidInvoice(invoiceId, clinicId);
++    }
++}
+diff --git a/backend/src/usecases/Payment/GetInvoicePaymentsUsecase.ts b/backend/src/usecases/Payment/GetInvoicePaymentsUsecase.ts
+new file mode 100644
+index 0000000..7d97569
+--- /dev/null
++++ b/backend/src/usecases/Payment/GetInvoicePaymentsUsecase.ts
+@@ -0,0 +1,19 @@
++import { Payment } from "../../models/Payment.model";
++import { IInvoiceRepository } from "../../repository/interfaces/IInvoiceRepository";
++import { IPaymentRepository } from "../../repository/interfaces/IPaymentRepository";
++import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
++
++export class GetInvoicePaymentsUsecase {
++    constructor(
++        private readonly paymentRepository: IPaymentRepository,
++        private readonly invoiceRepository: IInvoiceRepository
++    ) {}
++
++    async execute(invoiceId: string, clinicId: string): Promise<Payment[]> {
++        const invoice = await this.invoiceRepository.findById(invoiceId, clinicId);
++        if (!invoice) {
++            throw new NotFoundError('Invoice not found');
++        }
++        return this.paymentRepository.findByInvoiceId(invoiceId, clinicId);
++    }
++}
+diff --git a/backend/src/usecases/Payment/RecordPaymentUsecase.ts b/backend/src/usecases/Payment/RecordPaymentUsecase.ts
+new file mode 100644
+index 0000000..8f8a9a2
+--- /dev/null
++++ b/backend/src/usecases/Payment/RecordPaymentUsecase.ts
+@@ -0,0 +1,41 @@
++import { PayMethod, Payment } from "../../models/Payment.model";
++import { IInvoiceRepository } from "../../repository/interfaces/IInvoiceRepository";
++import { IPaymentRepository } from "../../repository/interfaces/IPaymentRepository";
++import { NotFoundError } from "../../util/exceptions/http/NotFoundError";
++
++export interface RecordPaymentInput {
++    clinicId: string;
++    invoiceId: string;
++    amountCents: number;
++    method?: PayMethod;
++    reference?: string | null;
++    paidAt?: Date;
++}
++
++export class RecordPaymentUsecase {
++    constructor(
++        private readonly paymentRepository: IPaymentRepository,
++        private readonly invoiceRepository: IInvoiceRepository
++    ) {}
++
++    async execute(input: RecordPaymentInput): Promise<Payment> {
++        // Fast, non-authoritative check for a clean 404. The real invariants
++        // (void / already paid / overpayment) are enforced inside the repository's
++        // locked transaction, because this read can be stale by the time we write.
++        const invoice = await this.invoiceRepository.findById(input.invoiceId, input.clinicId);
++        if (!invoice) {
++            throw new NotFoundError('Invoice not found');
++        }
++
++        const payment = Payment.record({
++            id: crypto.randomUUID(),
++            invoiceId: invoice.getId(),
++            amountCents: input.amountCents,
++            method: input.method,
++            reference: input.reference,
++            paidAt: input.paidAt,
++        });
++
++        return this.paymentRepository.recordPayment(payment, input.clinicId);
++    }
++}
+diff --git a/backend/src/util/date.ts b/backend/src/util/date.ts
+new file mode 100644
+index 0000000..6b3db06
+--- /dev/null
++++ b/backend/src/util/date.ts
+@@ -0,0 +1,36 @@
++import { ValidationError } from "./exceptions/http/ValidationError";
++
++const BUSINESS_TZ = 'Asia/Beirut';
++
++const beirutFormatter = new Intl.DateTimeFormat('en-CA', {
++    timeZone: BUSINESS_TZ,
++    year: 'numeric',
++    month: '2-digit',
++    day: '2-digit',
++});
++
++/** 'YYYY-MM-DD' of an instant, as seen on a Beirut calendar. */
++export function toBeirutDateString(date: Date): string {
++    return beirutFormatter.format(date);
++}
++
++export function todayInBeirut(): string {
++    return toBeirutDateString(new Date());
++}
++
++/** 'YYYY-MM-DD' of a date-only value (Prisma @db.Date comes back as UTC midnight). */
++export function formatDateOnly(date: Date): string {
++    return date.toISOString().slice(0, 10);
++}
++
++/** Parses a strict 'YYYY-MM-DD' string into a UTC-midnight Date. */
++export function parseDateOnly(value: unknown, field = 'date'): Date {
++    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
++        throw new ValidationError(`${field} must be a date in YYYY-MM-DD format`);
++    }
++    const date = new Date(`${value}T00:00:00.000Z`);
++    if (isNaN(date.getTime()) || formatDateOnly(date) !== value) {
++        throw new ValidationError(`${field} is not a valid date`);
++    }
++    return date;
++}
+diff --git a/backend/src/util/requestContext.ts b/backend/src/util/requestContext.ts
+new file mode 100644
+index 0000000..2a26561
+--- /dev/null
++++ b/backend/src/util/requestContext.ts
+@@ -0,0 +1,19 @@
++import { Request } from "express";
++import { ValidationError } from "./exceptions/http/ValidationError";
++
++export interface RequestContext {
++    clinicId: string;
++}
++
++/**
++ * TEMPORARY (decision D5): until Auth exists, the clinic comes from the
++ * `x-clinic-id` header. When Auth lands, only this function changes:
++ * it will read clinicId from the verified session instead.
++ */
++export function getRequestContext(req: Request): RequestContext {
++    const clinicId = req.header('x-clinic-id');
++    if (!clinicId || clinicId.trim().length === 0) {
++        throw new ValidationError('x-clinic-id header is required');
++    }
++    return { clinicId: clinicId.trim() };
++}

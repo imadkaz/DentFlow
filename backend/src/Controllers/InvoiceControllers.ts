@@ -1,72 +1,89 @@
+import { Request, Response } from "express";
 import { Invoice } from "../models/Invoice.model";
 import { CreateInvoiceUsecase } from "../usecases/Invoice/CreateInvoiceUsecase";
 import { GetInvoiceUsecase } from "../usecases/Invoice/GetInvoiceUsecase";
+import { GetPatientInvoicesUsecase } from "../usecases/Invoice/GetPatientInvoicesUsecase";
 import { UpdateInvoiceUsecase } from "../usecases/Invoice/UpdateInvoiceUsecase";
-import { Request, Response } from "express";
-import { NotFoundError } from "../util/exceptions/http/NotFoundError";
+import { VoidInvoiceUsecase } from "../usecases/Invoice/VoidInvoiceUsecase";
+import { formatDateOnly, parseDateOnly } from "../util/date";
+import { ValidationError } from "../util/exceptions/http/ValidationError";
+import { getRequestContext } from "../util/requestContext";
 
 export class InvoiceController {
     constructor(
         private readonly getInvoiceUsecase: GetInvoiceUsecase,
         private readonly createInvoiceUsecase: CreateInvoiceUsecase,
-        private readonly updateInvoiceUsecase: UpdateInvoiceUsecase
+        private readonly updateInvoiceUsecase: UpdateInvoiceUsecase,
+        private readonly voidInvoiceUsecase: VoidInvoiceUsecase,
+        private readonly getPatientInvoicesUsecase: GetPatientInvoicesUsecase
     ) {}
 
-    CreateInvoice = async (req: Request, res: Response) => {
+    createInvoice = async (req: Request, res: Response) => {
+        const { clinicId } = getRequestContext(req);
+        const input = req.body ?? {};
 
-        const input = await req.body;
+        // Only these fields are accepted. status / issuedAt / clinicId in the body are ignored.
         const invoice = await this.createInvoiceUsecase.execute({
-            patientId: input.patientId,
-            clinicId: input.clinicId,
-            planId: input.planId,
-            status: input.status,
-            amount: input.amount,
-            dueDate: input.dueDate,
-            issuedAt: input.issuedAt,
+            clinicId,
+            patientId: this.requireString(input.patientId, 'patientId'),
+            planId: this.requireString(input.planId, 'planId'),
+            amountCents: input.amountCents,
+            dueDate: parseDateOnly(input.dueDate, 'dueDate'),
         });
 
         res.status(201).json(this.toResponse(invoice));
     }
 
     getInvoice = async (req: Request, res: Response) => {
-        const  id  = req.params.id;
-        if (!id) {
-            throw new NotFoundError("Invoice ID is required");
-        }
-        const invoice = await this.getInvoiceUsecase.executeById(id as string);
+        const { clinicId } = getRequestContext(req);
+        const invoice = await this.getInvoiceUsecase.executeById(req.params.id as string, clinicId);
         res.status(200).json(this.toResponse(invoice));
     }
 
-    updateInvoice = async (req: Request, res: Response) => {
-        const id = req.params.id;
-        const input = req.body;
+    getPatientInvoices = async (req: Request, res: Response) => {
+        const { clinicId } = getRequestContext(req);
+        const invoices = await this.getPatientInvoicesUsecase.execute(req.params.patientId as string, clinicId);
+        res.status(200).json(invoices.map((i) => this.toResponse(i)));
+    }
 
-        if (!id) {
-            throw new NotFoundError("Invoice ID is required");
-        }
-        
-        const updatedInvoice = await this.updateInvoiceUsecase.execute({
-            id: id as string,
-            status: input.status,
-            amount: input.amount,
-            dueDate: input.dueDate,
-            issuedAt: input.issuedAt,
+    updateInvoice = async (req: Request, res: Response) => {
+        const { clinicId } = getRequestContext(req);
+        const input = req.body ?? {};
+
+        const invoice = await this.updateInvoiceUsecase.execute({
+            id: req.params.id as string,
+            clinicId,
+            dueDate: parseDateOnly(input.dueDate, 'dueDate'),
         });
 
-        res.status(200).json(this.toResponse(updatedInvoice));
+        res.status(200).json(this.toResponse(invoice));
+    }
+
+    voidInvoice = async (req: Request, res: Response) => {
+        const { clinicId } = getRequestContext(req);
+        const invoice = await this.voidInvoiceUsecase.execute(req.params.id as string, clinicId);
+        res.status(200).json(this.toResponse(invoice));
+    }
+
+    private requireString(value: unknown, field: string): string {
+        if (typeof value !== 'string' || value.trim().length === 0) {
+            throw new ValidationError(`${field} is required`);
+        }
+        return value;
     }
 
     private toResponse(invoice: Invoice) {
         return {
             id: invoice.getId(),
-            patientId: invoice.getPatientId(),
             clinicId: invoice.getClinicId(),
+            patientId: invoice.getPatientId(),
             planId: invoice.getPlanId(),
             status: invoice.getStatus(),
-            amount: invoice.getAmount(),
-            dueDate: invoice.getDueDate(),
+            amountCents: invoice.getAmountCents(),
+            paidCents: invoice.getPaidCents(),
+            balanceCents: invoice.getBalanceCents(),
+            dueDate: formatDateOnly(invoice.getDueDate()),
             issuedAt: invoice.getIssuedAt(),
         };
     }
-
 }
