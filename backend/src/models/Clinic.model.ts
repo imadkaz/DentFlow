@@ -8,6 +8,7 @@ export class Clinic {
         private name: string,
         private phone: string | null,
         private email: string | null,
+        private currency: string,
         private logoUrl: string | null,
         private readonly createdAt: Date,
         private updatedAt: Date,
@@ -16,6 +17,7 @@ export class Clinic {
     static create(props: {
         id: string;
         name: string;
+        currency?: string;
         phone?: string | null;
         email?: string | null;
         logoUrl?: string | null;
@@ -31,13 +33,17 @@ export class Clinic {
             logger.error('Clinic name must be at most 120 characters');
             throw new Error('Clinic name must be at most 120 characters');
         }
-
+        const currency = (props.currency ?? 'USD').trim().toUpperCase();
+        if (!/^[A-Z]{3}$/.test(currency)) {
+            throw new Error('Currency must be a 3-letter ISO code');
+        }
         const now = new Date();
         return new Clinic(
             props.id,
             trimmedName,
             props.phone ?? null,
             props.email ?? null,
+            currency,
             props.logoUrl ?? null,
             props.createdAt ?? now,
             props.updatedAt ?? now,
@@ -48,6 +54,7 @@ export class Clinic {
     getName(): string { return this.name; }
     getPhone(): string | null { return this.phone; }
     getEmail(): string | null { return this.email; }
+    getCurrency(): string { return this.currency; }
     getLogoUrl(): string | null { return this.logoUrl; }
     getCreatedAt(): Date { return this.createdAt; }
     getUpdatedAt(): Date { return this.updatedAt; }

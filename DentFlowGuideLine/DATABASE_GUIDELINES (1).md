@@ -515,6 +515,7 @@ model Clinic {
   logoUrl       String?
   phone         String?            @db.VarChar(30)
   email         String?            @unique @db.VarChar(120)
+  currency      String?            @db.Varchar(3) @default("USD")
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
   doctors       Doctor[]
@@ -757,6 +758,7 @@ enum InvoiceStatus {
 
 model Invoice {
   id        String        @id @default(uuid())
+  clinicId  String
   planId    String
   plan      TreatmentPlan @relation(fields: [planId], references: [id])
   patientId String
