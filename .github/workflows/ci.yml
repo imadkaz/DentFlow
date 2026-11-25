@@ -42,7 +42,7 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Run tests
-        run: npm run test-vitest
+        run: npm run test
 
   lint:
     runs-on: ubuntu-latest
